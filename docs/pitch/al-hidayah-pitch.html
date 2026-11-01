@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Al-Hidayah: the idea, before the proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07201a;--bg2:#0d3328;--tx:#f3ead3;--q:#a9bdb2;--gd:#d9b15f;--ln:rgba(217,177,95,.32);--ok:#8fd0a8;--no:#e58a7b;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f6eedb;--bg2:#fffaf0;--tx:#10241e;--q:#4a5e55;--gd:#85601a;--ln:rgba(133,96,26,.38);--ok:#1d6b43;--no:#a5352a;color-scheme:light}}
+:root[data-theme="light"]{--bg:#f6eedb;--bg2:#fffaf0;--tx:#10241e;--q:#4a5e55;--gd:#85601a;--ln:rgba(133,96,26,.38);--ok:#1d6b43;--no:#a5352a;color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:17px/1.65 "Hind Siliguri",system-ui,sans-serif;transition:background .3s,color .3s}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.deck{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.deck::-webkit-scrollbar{display:none}
+section{flex:0 0 100%;box-sizing:border-box;scroll-snap-align:start;overflow-y:auto;padding:48px max(22px,7vw) 110px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.w{max-width:940px;width:100%;position:relative;z-index:1}
+h1,h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;line-height:1.06;margin:0 0 .45em}
+h1{font-size:clamp(44px,8vw,92px)}
+h2{font-size:clamp(30px,4.6vw,54px);max-width:18em}
+p{margin:0 0 1em;max-width:36em}
+.q{color:var(--q)}
+.sm{font-size:14.5px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gd);outline-offset:3px}
+.card{background:var(--bg2);border:1px solid var(--ln);border-radius:14px;padding:24px 28px;max-width:640px}
+.ar{font-family:Amiri,"Noto Naskh Arabic",serif;font-size:clamp(34px,5vw,54px);line-height:2;text-align:center;direction:rtl;margin:0}
+.en{font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:500;font-size:clamp(23px,3vw,32px);line-height:1.35;text-align:center;margin:.1em auto}
+.bn{text-align:center;margin:.5em auto 0;padding:.5em 1em;border-radius:12px;background:var(--ln);max-width:30em;line-height:1.8}
+.ref{text-align:center;color:var(--gd);font-size:15px;margin:.4em 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.chip{border:1px solid var(--ln);background:none;border-radius:999px;padding:6px 16px;transition:background .2s,border-color .2s}
+.chip[aria-pressed="true"],.chip[aria-selected="true"]{background:var(--gd);border-color:var(--gd);color:#07201a}
+.chip:disabled{opacity:.55;cursor:default}
+.tabs{display:grid;grid-template-columns:minmax(0,15em) 1fr;gap:28px;align-items:start;margin-top:24px}
+.tl{display:flex;flex-direction:column;gap:6px}
+.tl .chip{text-align:left;border-radius:12px;padding:10px 16px}
+.tp{border-left:2px solid var(--gd);padding:2px 0 2px 24px;min-height:9em;animation:in .35s ease}
+.tp h3{font-family:"Cormorant Garamond",serif;font-size:28px;margin:0 0 .3em}
+.tp .an{color:var(--gd)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+textarea{width:100%;max-width:560px;box-sizing:border-box;background:var(--bg2);color:var(--tx);border:1px solid var(--ln);border-radius:12px;padding:12px 16px;font:inherit;resize:vertical}
+.fp{font-family:ui-monospace,Menlo,monospace;font-size:14px;margin:.2em 0}
+.st{display:inline-block;margin-top:12px;padding:8px 18px;border-radius:12px;border:1px solid;font-weight:600}
+.st.ok{color:var(--ok)}.st.no{color:var(--no)}
+.pv{height:min(40vh,360px);border:1px solid var(--gd);outline:6px solid var(--ln);outline-offset:-14px;border-radius:6px;background:var(--bg2);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;box-sizing:border-box;transition:aspect-ratio .4s;text-align:center}
+.pv .ar{font-size:clamp(20px,3vw,28px);line-height:1.8}.pv .en{font-size:clamp(14px,1.8vw,18px)}.pv .ref{font-size:12px}
+.pv small{margin-top:auto;color:var(--q);font-size:11px}
+.row{display:flex;gap:36px;flex-wrap:wrap;align-items:center}
+ul.k{padding-left:1.1em;max-width:30em;margin:0}ul.k li{margin:0 0 .6em}
+details{border-top:1px solid var(--ln);padding:12px 0;max-width:42em}details:last-of-type{border-bottom:1px solid var(--ln)}
+summary{cursor:pointer;font-weight:600}details p{margin:.6em 0 0}
+.star{position:absolute;right:-6vw;top:50%;width:min(52vw,560px);transform:translateY(-50%);opacity:.5;z-index:0;pointer-events:none}
+.star *{fill:none;stroke:var(--gd);stroke-width:1.2;stroke-dasharray:1;stroke-dashoffset:1;animation:dr 3.2s .2s cubic-bezier(.22,1,.36,1) forwards}
+.star circle{animation-delay:1.4s}
+@keyframes dr{to{stroke-dashoffset:0}}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--bg2);border:1px solid var(--ln);backdrop-filter:blur(8px)}
+.nav button{background:none;border:0;border-radius:999px;min-width:40px;height:40px}
+.dot{width:10px!important;min-width:10px!important;height:10px!important;border:1px solid var(--gd)!important;padding:0}
+.dot[aria-current="true"]{background:var(--gd)!important;width:26px!important}
+@media (max-width:720px){.tabs{grid-template-columns:1fr}.tl{flex-direction:row;flex-wrap:wrap}.star{opacity:.28}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}.star *{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<main class="deck" id="deck">
+
+<section aria-label="Introduction">
+<svg class="star" viewBox="-30 -30 460 460" aria-hidden="true"><rect x="50" y="50" width="300" height="300" pathLength="1"/><rect x="50" y="50" width="300" height="300" transform="rotate(45 200 200)" pathLength="1"/><circle cx="200" cy="200" r="212" pathLength="1"/></svg>
+<div class="w">
+<h1>A calm minute, every day.</h1>
+<p>Al-Hidayah brings one verse or one authentic hadith to the screen each day, with the Arabic, an English translation, a Bangla translation and its exact source.</p>
+<div class="chips" role="group" aria-label="Languages shown in the sample">
+<button class="chip" disabled>Arabic always shown</button>
+<button class="chip" data-l="en" aria-pressed="true">English</button>
+<button class="chip" data-l="bn" aria-pressed="true">বাংলা</button>
+</div>
+<div class="card">
+<p class="ar" lang="ar" dir="rtl">إِنَّ مَعَ الْعُسْرِ يُسْرًا</p>
+<p class="en" lang="en" data-l="en">“Indeed, with hardship comes ease.”</p>
+<p class="bn" lang="bn" data-l="bn">নিশ্চয় কষ্টের সাথে রয়েছে সহজতা।</p>
+<p class="ref">Qur’an, 94:6</p>
+</div>
+<p class="q sm" style="margin-top:14px">A sample taken from the design mockup. In the real product, every line comes from a verified dataset. Swipe, use the arrows below, or press the right arrow key.</p>
+</div>
+</section>
+
+<section aria-label="Four ideas">
+<div class="w">
+<h2>Four ideas that make the rest easy to follow</h2>
+<p class="q">Choose one. Each has an everyday comparison.</p>
+<div class="tabs" id="t1"></div>
+</div>
+</section>
+
+<section aria-label="Content integrity">
+<div class="w">
+<h2>Why one wrong letter cannot slip through</h2>
+<p>When a person has proofed a text, it gets a fingerprint. Every build recomputes it. If anything has changed, the fingerprints differ and the build stops. Try it: change a single letter.</p>
+<label for="tx" class="sm q">A demo line (not scripture)</label><br>
+<textarea id="tx" rows="2" spellcheck="false">A line that has been proofed and fingerprinted.</textarea>
+<p class="fp q">Proofed: <span id="f0">…</span></p>
+<p class="fp">This build: <span id="f1">…</span></p>
+<span class="st ok" id="st" role="status">Matches the proofed copy. This build can ship.</span>
+<div style="margin-top:14px"><button class="chip" id="rs">Restore the proofed line</button></div>
+</div>
+</section>
+
+<section aria-label="Share Studio">
+<div class="w">
+<h2>Sharing, with the same care</h2>
+<div class="row">
+<div>
+<div class="chips" id="fm" role="group" aria-label="Share format"></div>
+<ul class="k">
+<li>The reference is always printed on the image.</li>
+<li>Text is never cut. It shrinks first, then moves to a taller shape.</li>
+<li>Send as message opens your phone’s share sheet. You pick Messenger, WhatsApp or Instagram Direct, and the person.</li>
+</ul>
+<p class="q sm" style="margin-top:12px" id="fn"></p>
+</div>
+<div class="pv" id="pv" aria-label="Share preview">
+<p class="ar" lang="ar" dir="rtl">إِنَّ مَعَ الْعُسْرِ يُسْرًا</p>
+<p class="en">“Indeed, with hardship comes ease.”</p>
+<p class="ref">Qur’an, 94:6</p>
+<small>Al-Hidayah</small>
+</div>
+</div>
+</div>
+</section>
+
+<section aria-label="Security">
+<div class="w">
+<h2>Protected in layers</h2>
+<p class="q">Choose a layer.</p>
+<div class="tabs" id="t2"></div>
+</div>
+</section>
+
+<section aria-label="Plan">
+<div class="w">
+<h2>The plan in one place</h2>
+<p>Seven phases. The public site launches after Phase 5, so the reviewer tools never hold it up. Total cost to build and run: <strong>$0</strong>.</p>
+<div class="tabs" id="t3"></div>
+</div>
+</section>
+
+<section aria-label="Decisions">
+<div class="w">
+<h2>What we need from you</h2>
+<p>Already decided: no donations, no ads, no tracking, free to run. Three questions remain.</p>
+<details><summary>Which English translation should be the default?</summary><p>Every edition has its own wording and its own license. The name of the edition is shown in the app, so the choice should be yours.</p></details>
+<details><summary>Who will review the reminder pool and spot-check each release?</summary><p>A qualified person must confirm that each reminder stands on its own and that a sample matches a trusted printed copy. This is the most important role in the project.</p></details>
+<details><summary>A free address at launch, or a custom domain?</summary><p>The free pages.dev address costs nothing. A custom domain is the only possible cost and is entirely optional.</p></details>
+<p style="margin-top:24px">Next, the written proposal.</p>
+</div>
+</section>
+</main>
+
+<nav class="nav" aria-label="Slides">
+<button id="pr" aria-label="Previous slide">‹</button>
+<span id="dots" style="display:flex;gap:6px;align-items:center"></span>
+<button id="nx" aria-label="Next slide">›</button>
+<button id="th" aria-label="Switch light or dark theme">◐</button>
+</nav>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const deck=$('#deck'),sl=$$('section'),dots=$('#dots');let cur=0;
+sl.forEach((_,i)=>{const b=document.createElement('button');b.className='dot';b.setAttribute('aria-label','Slide '+(i+1));b.onclick=()=>go(i);dots.append(b)});
+const go=i=>{i=Math.max(0,Math.min(sl.length-1,i));deck.scrollTo({left:i*deck.clientWidth})};
+const mark=()=>{cur=Math.round(deck.scrollLeft/deck.clientWidth);$$('.dot').forEach((d,i)=>d.setAttribute('aria-current',String(i===cur)))};
+deck.addEventListener('scroll',()=>{clearTimeout(mark.t);mark.t=setTimeout(mark,60)});
+mark();
+$('#pr').onclick=()=>go(cur-1);$('#nx').onclick=()=>go(cur+1);
+addEventListener('keydown',e=>{if(/TEXTAREA|INPUT|SUMMARY/.test(e.target.tagName))return;if(e.key==='ArrowRight'||e.key==='PageDown')go(cur+1);if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1)});
+$('#th').onclick=()=>{const r=document.documentElement,l=matchMedia('(prefers-color-scheme:light)').matches;const now=r.dataset.theme||(l?'light':'dark');r.dataset.theme=now==='dark'?'light':'dark'};
+
+$$('[data-l]').forEach(b=>{if(b.tagName==='BUTTON')b.onclick=()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);$$('p[data-l="'+b.dataset.l+'"]').forEach(p=>p.hidden=!on)}});
+
+function tabs(id,items){const root=$(id),l=document.createElement('div'),p=document.createElement('div');l.className='tl';l.setAttribute('role','tablist');p.className='tp';p.setAttribute('role','tabpanel');p.setAttribute('aria-live','polite');
+const show=i=>{$$('button',l).forEach((b,j)=>b.setAttribute('aria-selected',j===i));const t=items[i];p.innerHTML='';p.style.animation='none';p.offsetHeight;p.style.animation='';const h=document.createElement('h3');h.textContent=t.h||t.t;const d=document.createElement('p');d.textContent=t.d;p.append(h,d);if(t.a){const a=document.createElement('p');a.className='an';a.textContent=t.a;p.append(a)}};
+items.forEach((t,i)=>{const b=document.createElement('button');b.className='chip';b.setAttribute('role','tab');b.textContent=t.t;b.onclick=()=>show(i);l.append(b)});
+root.append(l,p);show(0)}
+
+tabs('#t1',[
+{t:'A static site',h:'Made ahead, handed out unchanged',d:'The finished pages are prepared before anyone visits. There is no database to break into and very little that can go wrong while a person is reading.',a:'Like a printed poster on a wall: anyone can read it, nobody can rewrite it from the street.'},
+{t:'Proofread before print',h:'Checked by machine and by a person',d:'Every verse and hadith is tested automatically and a human spot-checks a sample before each release. One failed check stops the release.',a:'Like the proofreaders of a printed Mushaf: many hands before the press runs.'},
+{t:'Keys and wristbands',h:'Roles and signed tokens, later',d:'Reviewers get a small dashboard. The server checks a signed token and the right role on every request, and sends the wrong role to an Unauthorized page.',a:'Roles are hotel key cards that open only your floor. The token is the concert wristband, checked at every gate and expiring at night’s end.'},
+{t:'Free, for good',h:'Nothing that can start charging',d:'Free hosting with no bandwidth cap, open fonts, open datasets and free tools. No ads, no payments, no tracking.',a:'A lantern that needs no fuel bill.'}]);
+
+tabs('#t2',[
+{t:'The wall',d:'HTTPS everywhere and strict browser security headers stop scripts that should not be there from running at all.'},
+{t:'The shield',d:'Cloudflare absorbs floods of traffic and blocks known bad bots, on its free plan.'},
+{t:'The gate',d:'In the reviewer dashboard, every request is checked for a signed token and the right role, on the server. Hiding a button never counts as protection.'},
+{t:'The safe',d:'Keys and secrets live only in environment variables on the server, never in the browser or the repository. With no payments, there are no payment keys at all.'},
+{t:'The sign',d:'If someone right-clicks or opens developer tools, the page greets them with “Assalamu Alaikum.” and nothing more.',a:'To be plain: this is a courtesy sign, not a lock. It never stops anyone from copying a verse and never runs on phones.'}]);
+
+tabs('#t3',[
+{t:'0 Foundations',d:'The repository, automated checks and the verified data pipeline. Nothing visible yet; everything depends on it.'},
+{t:'1 Core experience',d:'The reminder in three languages with references, favorites, categories, light and dark themes.'},
+{t:'2 Beauty and motion',d:'The full design from your mockups, scroll motion and a gentle 3D hero.'},
+{t:'3 Share Studio',d:'Post, story, image-only and send as message, with live previews.'},
+{t:'4 Prayer times and offline',d:'Times for your city, installable, working without a connection.'},
+{t:'5 Hardening and release',d:'Security review, accessibility audit and human content review, then launch.'},
+{t:'6 Management layer',d:'The reviewer dashboard with roles and signed tokens, after launch.'}]);
+
+const hex=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+const tx=$('#tx'),base=tx.value;
+async function chk(){try{const[a,b]=await Promise.all([hex(base),hex(tx.value)]);$('#f0').textContent=a.slice(0,24)+'…';$('#f1').textContent=b.slice(0,24)+'…';const ok=a===b,s=$('#st');s.className='st '+(ok?'ok':'no');s.textContent=ok?'Matches the proofed copy. This build can ship.':'Does not match. The build stops here, and nothing ships.'}catch(e){$('#st').textContent='Fingerprints need a secure (https) page.'}}
+tx.addEventListener('input',chk);$('#rs').onclick=()=>{tx.value=base;chk()};chk();
+
+const F=[['Facebook or Instagram post','4/5','Fits the feeds of both platforms. 1080 × 1350.'],['Story','9/16','Platform buttons sit at the top and bottom, so the verse stays in the safe middle. 1080 × 1920.'],['Image only','1/1','A clean square for chats and quick posts. 1080 × 1080.']];
+F.forEach((f,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=f[0];b.setAttribute('aria-pressed',i===0);b.onclick=()=>{$$('#fm .chip').forEach((c,j)=>c.setAttribute('aria-pressed',j===i));$('#pv').style.aspectRatio=f[1];$('#fn').textContent=f[2]};$('#fm').append(b)});
+$('#pv').style.aspectRatio='4/5';$('#fn').textContent=F[0][2];
+</script>
+</body>
+</html>
