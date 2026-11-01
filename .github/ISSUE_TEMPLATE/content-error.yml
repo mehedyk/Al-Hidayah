@@ -1,0 +1,22 @@
+name: Report a content error
+description: A wrong letter, translation, reference, grade or category. These are the highest priority.
+labels: ["content-error", "priority-high"]
+body:
+  - type: input
+    id: item
+    attributes:
+      label: Which item?
+      description: The reference shown (for example Qur'an 94:6, or Sahih Muslim, book and number)
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What looks wrong?
+      description: Please say where you checked it (a printed copy, a trusted website).
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: How can we reach you? (optional)
