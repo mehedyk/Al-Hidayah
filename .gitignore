@@ -4,7 +4,10 @@ dist/
 .env.*
 !.env.example
 .wrangler/
+.vercel/
+.netlify/
 .DS_Store
 coverage/
 test-results/
 playwright-report/
+vibe_images/
