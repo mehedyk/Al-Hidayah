@@ -1,6 +1,15 @@
-import { useMemo, useState } from 'preact/hooks';
-import { items, formatShortReference } from '../lib/data';
+import { useEffect, useState } from 'preact/hooks';
+import { formatShortReference } from '../lib/data';
+import {
+  loadSurah,
+  quranSurahs,
+  quranVerseCount,
+  searchQuran,
+  type QuranSearchResult,
+  type QuranShard,
+} from '../lib/quranLibrary';
 import { useApp } from '../lib/app-context';
+import type { Item } from '../lib/types';
 import { Icon, Ornament } from './Icon';
 
 export function ReviewGate({ kind }: { kind: 'hadith' | 'categories' }) {
@@ -25,82 +34,335 @@ export function ReviewGate({ kind }: { kind: 'hadith' | 'categories' }) {
         <Icon name="clock" size={17} /> Awaiting qualified human review
       </span>
       <a class="button button--secondary" href="/quran/">
-        Browse the approved Qur’an reminders <Icon name="arrow" />
+        Browse the complete Qur’an <Icon name="arrow" />
       </a>
     </div>
   );
 }
 
-export function BrowserPage({ kind }: { kind: 'quran' | 'hadith' }) {
-  const { favoriteIds, toggleFavorite } = useApp();
-  const [query, setQuery] = useState('');
-  const sourceItems = useMemo(() => items.filter((item) => item.ref.kind === kind), [kind]);
-  const filtered = sourceItems.filter((item) =>
-    `${item.en} ${item.bn}`.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
-  );
-
-  if (kind === 'hadith' && sourceItems.length === 0) return <ReviewGate kind="hadith" />;
+function QuranVerse({ item }: { item: Item }) {
+  const { settings, favoriteIds, toggleFavorite, openShare } = useApp();
+  const saved = favoriteIds.has(item.id);
+  if (item.ref.kind !== 'quran') return null;
+  const ayah = item.ref.ayah;
 
   return (
-    <div class="browser-page">
+    <article class="quran-ayah" id={`ayah-${ayah}`} aria-labelledby={`ayah-${ayah}-reference`}>
+      <div class="quran-ayah__number" aria-hidden="true">
+        {ayah}
+      </div>
+      <p class="quran-ayah__arabic" lang="ar" dir="rtl">
+        {item.ar}
+      </p>
+      {settings.showEnglish && (
+        <p class="quran-ayah__english" lang="en">
+          {item.en}
+        </p>
+      )}
+      {settings.showBangla && (
+        <p class="quran-ayah__bangla" lang="bn">
+          {item.bn}
+        </p>
+      )}
+      <div class="quran-ayah__footer">
+        <span id={`ayah-${ayah}-reference`}>{formatShortReference(item)}</span>
+        <div>
+          <a
+            class="text-button"
+            href={item.contextUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Read ${item.ref.surahName} ${item.ref.surah}:${ayah} in context`}
+          >
+            Context <Icon name="arrow" size={15} />
+          </a>
+          <button
+            class={`text-button ${saved ? 'is-saved' : ''}`}
+            type="button"
+            onClick={() => toggleFavorite(item)}
+            aria-pressed={saved}
+          >
+            <Icon name="heart" size={17} filled={saved} /> {saved ? 'Saved' : 'Save'}
+          </button>
+          <button class="text-button" type="button" onClick={() => openShare(item)}>
+            <Icon name="share" size={17} /> Share
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function SearchResults({
+  results,
+  busy,
+  error,
+  query,
+  onOpen,
+}: {
+  results: QuranSearchResult[];
+  busy: boolean;
+  error: string;
+  query: string;
+  onOpen: (surah: number, ayah: number) => void;
+}) {
+  if (query.trim().length < 2) {
+    return <p class="quiet-panel">Enter at least two characters to search the complete Quran.</p>;
+  }
+  if (busy) return <p class="quiet-panel">Searching all {quranVerseCount.toLocaleString()} verses…</p>;
+  if (error) return <p class="inline-notice">{error}</p>;
+  if (results.length === 0) {
+    return (
+      <div class="empty-state">
+        <Icon name="search" size={30} />
+        <h2>No matching verses</h2>
+        <p>Try another English or Bangla word, a surah name, or a reference such as 94:6.</p>
+      </div>
+    );
+  }
+  return (
+    <section class="quran-search-results" aria-label="Quran search results">
+      <p class="quran-search-count" role="status">
+        {results.length.toLocaleString()} {results.length === 1 ? 'match' : 'matches'}
+        {results.length > 60 ? ' · showing the first 60' : ''}
+      </p>
+      <div>
+        {results.slice(0, 60).map((result) => (
+          <a
+            class="quran-search-result"
+            href={`/quran/?surah=${result.surah}&ayah=${result.ayah}`}
+            key={result.id}
+            onClick={(event) => {
+              event.preventDefault();
+              onOpen(result.surah, result.ayah);
+            }}
+          >
+            <span>Qur’an · {result.surahName} {result.surah}:{result.ayah}</span>
+            <p lang="en">{result.en}</p>
+            <p lang="bn">{result.bn}</p>
+            <Icon name="arrow" />
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function QuranBrowser() {
+  const [query, setQuery] = useState('');
+  const [selectedNumber, setSelectedNumber] = useState(1);
+  const [targetAyah, setTargetAyah] = useState<number>();
+  const [shard, setShard] = useState<QuranShard>();
+  const [readerError, setReaderError] = useState('');
+  const [results, setResults] = useState<QuranSearchResult[]>([]);
+  const [searchBusy, setSearchBusy] = useState(false);
+  const [searchError, setSearchError] = useState('');
+
+  const navigate = (surah: number, ayah?: number) => {
+    setQuery('');
+    setSelectedNumber(surah);
+    setTargetAyah(ayah);
+    const suffix = ayah ? `&ayah=${ayah}` : '';
+    window.history.pushState({}, '', `/quran/?surah=${surah}${suffix}`);
+  };
+
+  useEffect(() => {
+    const readLocation = () => {
+      const params = new URLSearchParams(window.location.search);
+      const requested = Number(params.get('surah') ?? '1');
+      const surah = quranSurahs[requested - 1] ? requested : 1;
+      const requestedAyah = Number(params.get('ayah') ?? '0');
+      setSelectedNumber(surah);
+      setTargetAyah(
+        requestedAyah >= 1 && requestedAyah <= quranSurahs[surah - 1].numberOfAyahs
+          ? requestedAyah
+          : undefined,
+      );
+    };
+    readLocation();
+    window.addEventListener('popstate', readLocation);
+    return () => window.removeEventListener('popstate', readLocation);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    setReaderError('');
+    setShard(undefined);
+    void loadSurah(selectedNumber)
+      .then((value) => {
+        if (active) setShard(value);
+      })
+      .catch((error: unknown) => {
+        if (active)
+          setReaderError(
+            error instanceof Error ? error.message : 'This surah could not be loaded. Try again.',
+          );
+      });
+    return () => {
+      active = false;
+    };
+  }, [selectedNumber]);
+
+  useEffect(() => {
+    if (!shard || !targetAyah) return;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(`ayah-${targetAyah}`)?.scrollIntoView({ block: 'center' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [shard, targetAyah]);
+
+  useEffect(() => {
+    let active = true;
+    if (query.trim().length < 2) {
+      setResults([]);
+      setSearchBusy(false);
+      setSearchError('');
+      return () => {
+        active = false;
+      };
+    }
+    setSearchBusy(true);
+    setSearchError('');
+    const timer = setTimeout(() => {
+      void searchQuran(query)
+        .then((matches) => {
+          if (active) setResults(matches);
+        })
+        .catch((error: unknown) => {
+          if (active)
+            setSearchError(error instanceof Error ? error.message : 'Search could not be loaded.');
+        })
+        .finally(() => {
+          if (active) setSearchBusy(false);
+        });
+    }, 180);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [query]);
+
+  const summary = quranSurahs[selectedNumber - 1];
+  return (
+    <div class="browser-page quran-browser">
       <div class="browser-toolbar">
         <label class="search-field">
           <Icon name="search" />
-          <span class="sr-only">Search English and Bangla translations</span>
+          <span class="sr-only">Search the complete Quran in English and Bangla</span>
           <input
             type="search"
             value={query}
             onInput={(event) => setQuery(event.currentTarget.value)}
-            placeholder="Search translations…"
+            placeholder="Search all 6,236 verses…"
           />
         </label>
-        <span>
-          {filtered.length} reviewed {filtered.length === 1 ? 'reminder' : 'reminders'}
-        </span>
+        <span>114 surahs · {quranVerseCount.toLocaleString()} verses</span>
       </div>
-      <div class="reminder-list">
-        {filtered.map((item) => {
-          const saved = favoriteIds.has(item.id);
-          return (
-            <article class="reminder-row">
-              <a class="reminder-row-main" href={`/?item=${encodeURIComponent(item.id)}`}>
-                <p class="row-arabic" lang="ar" dir="rtl">
-                  {item.ar}
-                </p>
-                <div>
-                  <p lang="en">{item.en}</p>
-                  <span>{formatShortReference(item)}</span>
-                </div>
-                <Icon name="arrow" />
-              </a>
-              <button
-                class={`icon-button ${saved ? 'is-saved' : ''}`}
-                type="button"
-                onClick={() => toggleFavorite(item)}
-                aria-label={saved ? 'Remove from favorites' : 'Save to favorites'}
-                aria-pressed={saved}
+
+      {query.trim() ? (
+        <SearchResults
+          results={results}
+          busy={searchBusy}
+          error={searchError}
+          query={query}
+          onOpen={navigate}
+        />
+      ) : (
+        <div class="quran-reader">
+          <div class="quran-reader__toolbar">
+            <label class="field">
+              <span>Choose a surah</span>
+              <select
+                value={selectedNumber}
+                onChange={(event) => navigate(Number(event.currentTarget.value))}
               >
-                <Icon name="heart" filled={saved} />
+                {quranSurahs.map((surah) => (
+                  <option value={surah.number} key={surah.number}>
+                    {surah.number}. {surah.englishName} · {surah.numberOfAyahs} verses
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div class="quran-reader__navigation">
+              <button
+                class="button button--ghost"
+                type="button"
+                disabled={selectedNumber === 1}
+                onClick={() => navigate(selectedNumber - 1)}
+              >
+                Previous
               </button>
-            </article>
-          );
-        })}
-      </div>
-      {filtered.length === 0 && (
-        <div class="empty-state">
-          <Icon name="search" size={30} />
-          <h2>No matching reminders</h2>
-          <p>Try a different word in English or Bangla.</p>
-          <button class="text-button" type="button" onClick={() => setQuery('')}>
-            Clear search
-          </button>
+              <button
+                class="button button--ghost"
+                type="button"
+                disabled={selectedNumber === 114}
+                onClick={() => navigate(selectedNumber + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          {readerError && (
+            <div class="inline-notice">
+              <p>{readerError}</p>
+              <button
+                class="text-button"
+                type="button"
+                onClick={() => {
+                  setReaderError('');
+                  setSelectedNumber(selectedNumber);
+                  void loadSurah(selectedNumber).then(setShard).catch((error: unknown) => {
+                    setReaderError(error instanceof Error ? error.message : 'Try again.');
+                  });
+                }}
+              >
+                Try again
+              </button>
+            </div>
+          )}
+          {!shard && !readerError && <p class="quiet-panel">Loading {summary.englishName}…</p>}
+          {shard && (
+            <>
+              <header class="quran-surah-heading">
+                <p class="eyebrow">Surah {shard.number} · {shard.numberOfAyahs} verses</p>
+                <h2>{shard.englishName}</h2>
+                <p>{shard.englishNameTranslation}</p>
+                <p class="quran-surah-heading__arabic" lang="ar" dir="rtl">
+                  {shard.name}
+                </p>
+              </header>
+              <div class="quran-ayah-list">
+                {shard.items.map((item) => (
+                  <QuranVerse item={item} key={item.id} />
+                ))}
+              </div>
+              <nav class="quran-reader__end" aria-label="Surah navigation">
+                {selectedNumber > 1 && (
+                  <button class="button button--ghost" type="button" onClick={() => navigate(selectedNumber - 1)}>
+                    Previous surah
+                  </button>
+                )}
+                {selectedNumber < 114 && (
+                  <button class="button button--secondary" type="button" onClick={() => navigate(selectedNumber + 1)}>
+                    Next surah <Icon name="arrow" size={17} />
+                  </button>
+                )}
+              </nav>
+            </>
+          )}
         </div>
       )}
       <p class="data-note">
-        Search matches translations only. Arabic source text is never rewritten for search.
+        Search covers English, Bangla, surah names, and exact references. Arabic is displayed only
+        from the untouched frozen source shards.
       </p>
     </div>
   );
+}
+
+export function BrowserPage({ kind }: { kind: 'quran' | 'hadith' }) {
+  return kind === 'hadith' ? <ReviewGate kind="hadith" /> : <QuranBrowser />;
 }
 
 export function CategoriesPage() {
