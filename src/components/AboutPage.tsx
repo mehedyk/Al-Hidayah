@@ -77,7 +77,7 @@ export function AboutPage() {
           <article>
             <span>03</span>
             <h3>Review</h3>
-            <p>Only the two reminders supplied in the approved designs are in the initial pool.</p>
+            <p>The complete Quran is readable; only two reviewed verses enter the standalone reminder pool.</p>
           </article>
           <article>
             <span>04</span>
