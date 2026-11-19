@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { App } from '../components/App';
+import type { Route } from '../lib/types';
+
+export function getStaticPaths() {
+  return ['quran', 'hadith', 'categories', 'daily', 'prayer', 'favorites', 'about', 'settings'].map(
+    (route) => ({ params: { route }, props: { route } }),
+  );
+}
+
+const { route } = Astro.props as { route: Exclude<Route, 'home'> };
+const titles: Record<Exclude<Route, 'home'>, string> = {
+  quran: 'From the Qur’an',
+  hadith: 'From the Hadith',
+  categories: 'For a Better Life',
+  daily: 'Daily Reminder',
+  prayer: 'Prayer Times',
+  favorites: 'Favorites',
+  about: 'About & Sources',
+  settings: 'Settings',
+};
+---
+
+<BaseLayout
+  title={`${titles[route]} — Al-Hidayah`}
+  description="Al-Hidayah: verified reminders in Arabic, English, and Bangla, private on your device."
+  route={route}
+>
+  <App client:load route={route} />
+</BaseLayout>
