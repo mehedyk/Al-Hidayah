@@ -24,7 +24,7 @@ const pageCopy: Record<
     eyebrow: 'Read and reflect',
     title: 'From the Qur’an',
     description:
-      'The initial collection contains only reminders supplied in the owner-approved designs.',
+      'Read all 114 surahs and 6,236 verses in Arabic, English, and Bangla, with exact references and whole-library search.',
   },
   hadith: {
     eyebrow: 'Authenticity before access',
