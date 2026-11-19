@@ -1,7 +1,7 @@
 import generated from '../data/generated/items.json';
 import type { Item } from './types';
 
-function isItem(value: unknown): value is Item {
+export function isItem(value: unknown): value is Item {
   if (!value || typeof value !== 'object') return false;
   const item = value as Record<string, unknown>;
   const ref = item.ref as Record<string, unknown> | undefined;
