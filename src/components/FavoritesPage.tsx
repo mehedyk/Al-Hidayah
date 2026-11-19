@@ -1,14 +1,43 @@
-import { useRef, useState } from 'preact/hooks';
-import { getItem, items, formatShortReference } from '../lib/data';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { formatShortReference } from '../lib/data';
+import { allQuranIds, resolveItem } from '../lib/quranLibrary';
 import { importFavorites, parseFavoriteImport } from '../lib/storage/favorites';
 import { useApp } from '../lib/app-context';
+import type { Item } from '../lib/types';
 import { Icon } from './Icon';
 
 export function FavoritesPage() {
   const { favoriteIds, toggleFavorite, openShare, notify, refreshFavorites } = useApp();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
-  const favorites = [...favoriteIds].map((id) => getItem(id)).filter((item) => item !== undefined);
+  const [favorites, setFavorites] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const ids = [...favoriteIds];
+    if (ids.length === 0) {
+      setFavorites([]);
+      setLoading(false);
+      return () => {
+        active = false;
+      };
+    }
+    setLoading(true);
+    void Promise.all(ids.map((id) => resolveItem(id)))
+      .then((records) => {
+        if (active) setFavorites(records.filter((item) => item !== undefined));
+      })
+      .catch(() => {
+        if (active) notify('Some saved verses could not be loaded. Try again when online.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [favoriteIds, notify]);
 
   const exportFile = () => {
     const records = favorites.map((item) => ({ id: item.id, savedAt: new Date().toISOString() }));
@@ -27,7 +56,7 @@ export function FavoritesPage() {
   const importFile = async (file: File) => {
     setBusy(true);
     try {
-      const records = parseFavoriteImport(await file.text(), new Set(items.map((item) => item.id)));
+      const records = parseFavoriteImport(await file.text(), allQuranIds);
       await importFavorites(records);
       await refreshFavorites();
       notify(`${records.length} favorites imported.`);
@@ -39,6 +68,8 @@ export function FavoritesPage() {
     }
   };
 
+  if (loading) return <p class="quiet-panel">Loading your saved verses…</p>;
+
   if (favorites.length === 0) {
     return (
       <div class="empty-state empty-state--large">
@@ -47,7 +78,7 @@ export function FavoritesPage() {
         </span>
         <h2>Nothing saved yet.</h2>
         <p>
-          Press Save on any reminder and it will appear here. Favorites stay on this device only.
+          Press Save on any verse or reminder and it will appear here. Favorites stay on this device only.
         </p>
         <a class="button button--primary" href="/">
           Find a reminder <Icon name="arrow" />
