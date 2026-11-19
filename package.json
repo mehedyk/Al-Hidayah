@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "pnpm data:validate && pnpm data:verify && astro build",
+    "build": "pnpm data:build && pnpm data:validate && pnpm data:verify && astro build",
     "preview": "astro preview",
     "data:fetch": "tsx scripts/fetch-data.ts",
     "data:validate": "tsx scripts/validate-data.ts",
