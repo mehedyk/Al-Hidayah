@@ -1,0 +1,43 @@
+{
+  "poolVersion": 1,
+  "items": [
+    {
+      "id": "q:94:6",
+      "ref": {
+        "kind": "quran",
+        "surah": 94,
+        "ayah": 6,
+        "surahName": "Ash-Sharh",
+        "edition": {
+          "ar": "Uthmani",
+          "en": "Saheeh International",
+          "bn": "Muhiuddin Khan"
+        }
+      },
+      "ar": "إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا",
+      "en": "Indeed, with hardship [will be] ease.",
+      "bn": "নিশ্চয় কষ্টের সাথে স্বস্তি রয়েছে।",
+      "categories": [],
+      "contextUrl": "https://quran.com/94/6"
+    },
+    {
+      "id": "q:13:28",
+      "ref": {
+        "kind": "quran",
+        "surah": 13,
+        "ayah": 28,
+        "surahName": "Ar-Ra'd",
+        "edition": {
+          "ar": "Uthmani",
+          "en": "Saheeh International",
+          "bn": "Muhiuddin Khan"
+        }
+      },
+      "ar": "ٱلَّذِينَ ءَامَنُوا۟ وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ ٱللَّهِ ۗ أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ",
+      "en": "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.\"",
+      "bn": "যারা বিশ্বাস স্থাপন করে এবং তাদের অন্তর আল্লাহর যিকির দ্বারা শান্তি লাভ করে; জেনে রাখ, আল্লাহর যিকির দ্বারাই অন্তর সমূহ শান্তি পায়।",
+      "categories": [],
+      "contextUrl": "https://quran.com/13/28"
+    }
+  ]
+}
