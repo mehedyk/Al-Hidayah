@@ -1,0 +1,45 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/cormorant-garamond/400.css';
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/cormorant-garamond/400-italic.css';
+import '@fontsource/amiri/400.css';
+import '@fontsource/amiri-quran/400.css';
+import '@fontsource/noto-serif-bengali/400.css';
+import '@fontsource/noto-serif-bengali/500.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  route?: string;
+}
+
+const { title, description, route = '' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark" data-text-size="default">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#08241d" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    {route === 'home' && (
+      <link rel="preload" as="image" href="/images/hero-desktop.webp" media="(min-width: 768px)" />
+    )}
+    <title>{title}</title>
+  </head>
+  <body class={`route-${route}`}>
+    <slot />
+  </body>
+</html>
