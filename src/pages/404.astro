@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SiteFooter } from '../components/SiteFooter';
+---
+
+<BaseLayout title="Page not found — Al-Hidayah" description="This page does not exist.">
+  <main id="main-content" class="not-found">
+    <p class="eyebrow">404</p>
+    <h1>This page doesn’t exist.</h1>
+    <p>The reminder you are looking for may have moved.</p>
+    <a class="button button--primary" href="/">
+      {' '}
+      Return home{' '}
+    </a>
+  </main>
+  <SiteFooter />
+</BaseLayout>
