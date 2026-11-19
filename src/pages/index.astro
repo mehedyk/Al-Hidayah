@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { App } from '../components/App';
+---
+
+<BaseLayout
+  title="Al-Hidayah — Qur’an, Hadith & Daily Reminder"
+  description="A quiet daily reminder in Arabic, English, and Bangla, with verified references, prayer times, favorites, and beautiful sharing."
+  route="home"
+>
+  <App client:load route="home" />
+</BaseLayout>
