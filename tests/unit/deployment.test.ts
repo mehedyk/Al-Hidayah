@@ -60,7 +60,7 @@ describe('static deployment configuration', () => {
 
   it('allows only the supplied media hosts, and nothing broader', () => {
     const csp = vercelHeaders('/(.*)')['Content-Security-Policy'];
-    expect(csp).toContain("media-src 'self' https://d8j0ntlcm91z4.cloudfront.net;");
+    expect(csp).toContain("media-src 'self' https://d8j0ntlcm91z4.cloudfront.net https://everyayah.com;");
     expect(csp).toContain('https://d2ol7oe51mr4n9.cloudfront.net');
     expect(csp).toContain('https://images.pexels.com');
     expect(csp).toContain("script-src 'self';");
