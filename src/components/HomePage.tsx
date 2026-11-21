@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
-import { dailyItemId } from '../lib/daily/dailyItem';
-import { getItem, items, formatReference } from '../lib/data';
-import { cryptoRandom, dealNext, emptyBag, type ShuffleBagState } from '../lib/picker/shuffleBag';
+import { items, formatReference } from '../lib/data';
+import { dailyReminderId, nextReminderId } from '../lib/reminders';
+import { quranVerseCount, resolveItem } from '../lib/quranLibrary';
 import { useApp } from '../lib/app-context';
 import { Header } from './Header';
 import { Icon, Ornament } from './Icon';
@@ -15,7 +15,7 @@ const entries = [
     href: '/quran/',
     icon: 'book' as const,
     title: 'From the Qur’an',
-    text: 'Owner-approved reminders with exact references',
+    text: 'All 114 surahs, search, juz and deep links',
   },
   {
     href: '/hadith/',
@@ -37,21 +37,11 @@ const entries = [
   },
 ];
 
-function loadBag(): ShuffleBagState {
-  try {
-    const value: unknown = JSON.parse(localStorage.getItem('al-hidayah:shuffle:v1') ?? 'null');
-    if (!value || typeof value !== 'object') return emptyBag;
-    const state = value as ShuffleBagState;
-    return Array.isArray(state.bag) && typeof state.position === 'number' ? state : emptyBag;
-  } catch {
-    return emptyBag;
-  }
-}
-
 export function HomePage() {
   const { notify, settings } = useApp();
   const [item, setItem] = useState(items[0]);
   const [online, setOnline] = useState(true);
+  const [busy, setBusy] = useState(false);
   const [intro, setIntro] = useState(false);
 
   useEffect(() => {
@@ -100,8 +90,19 @@ export function HomePage() {
   }, [settings.reducedMotion]);
 
   useEffect(() => {
+    let active = true;
     const requested = new URLSearchParams(window.location.search).get('item');
-    setItem(getItem(requested ?? '') ?? getItem(dailyItemId(new Date(), items)) ?? items[0]);
+    void resolveItem(requested ?? dailyReminderId(new Date(), settings.reminderSource))
+      .then((found) => {
+        if (active && found) setItem(found);
+      })
+      .catch(() => notify('Today’s reminder could not be loaded. Check your connection and try again.'));
+    return () => {
+      active = false;
+    };
+  }, [settings.reminderSource]);
+
+  useEffect(() => {
     const update = () => setOnline(navigator.onLine);
     update();
     window.addEventListener('online', update);
@@ -112,17 +113,17 @@ export function HomePage() {
     };
   }, []);
 
-  const nextReminder = () => {
+  const nextReminder = async () => {
+    if (busy) return;
+    setBusy(true);
     try {
-      const result = dealNext(
-        items.map((entry) => entry.id),
-        { ...loadBag(), lastId: item.id },
-        cryptoRandom,
-      );
-      localStorage.setItem('al-hidayah:shuffle:v1', JSON.stringify(result.state));
-      setItem(getItem(result.id) ?? items[0]);
+      const next = await resolveItem(nextReminderId(settings.reminderSource, item.id));
+      if (!next) throw new Error('missing');
+      setItem(next);
     } catch {
-      notify('A new reminder could not be loaded. Please try again.');
+      notify('A new reminder could not be loaded. Check your connection and try again.');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -150,7 +151,7 @@ export function HomePage() {
               month: 'long',
             })}
           </p>
-          <ReminderCard key={item.id} item={item} onNew={nextReminder} />
+          <ReminderCard key={item.id} item={item} onNew={() => void nextReminder()} busy={busy} />
           {!online && (
             <p class="offline-note" role="status">
               You are offline. Reminders still work; prayer times may be out of date.
@@ -228,12 +229,12 @@ export function HomePage() {
             <h2>Nothing published without a source.</h2>
             <p>
               Arabic is copied verbatim from the frozen Uthmani edition. English uses Saheeh
-              International and Bangla uses Muhiuddin Khan. The initial pool contains only the two
-              reminders already present in the approved designs.
+              International and Bangla uses Muhiuddin Khan. Reminders can draw from the entire
+              Qur’an, or only from the small owner-reviewed set; you choose in Settings.
             </p>
             <div class="integrity-facts">
               <span>
-                <strong>6,236</strong> verses aligned
+                <strong>{quranVerseCount.toLocaleString()}</strong> verses aligned
               </span>
               <span>
                 <strong>3</strong> editions fingerprinted
