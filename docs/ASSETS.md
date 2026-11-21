@@ -29,6 +29,20 @@ Lucide (<https://lucide.dev>), ISC licence, inlined as path data in `src/compone
 Copyright (c) Lucide Contributors; portions (c) Cole Bemis 2013-2022 (Feather, MIT).
 The mosque glyph and the Al-Hidayah logo mark are original.
 
+## Audio
+
+- Recitation: streamed from EveryAyah (https://everyayah.com); not bundled, not re-hosted. Check their terms for your use.
+- Calm sounds: generated at runtime by `src/lib/audio/ambient.ts`; original work, no recordings.
+
+## Fonts
+
+Kalpurush is not bundled. Add `public/fonts/kalpurush.ttf` yourself after confirming its licence.
+
+## Share templates
+
+Built-in designs are drawn in code. Photo templates reuse the Pexels scene photographs listed above.
+Pictures you add under `public/share-templates/` are yours to license and credit.
+
 ## README figures
 
 `docs/assets/*.svg` are original, hand-authored animated SVGs.
