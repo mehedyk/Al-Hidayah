@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import { FOOTER_POSTER_URL, FOOTER_VIDEO_URL } from '../lib/media';
 
 // `playsinline` must be a lowercase attribute so iOS plays the clip inline instead of fullscreen.
-const inline = { playsinline: true } as Record<string, unknown>;
+const inline = { playsinline: '' } as Record<string, unknown>;
 
 /**
  * The ink-landscape video. It autoplays muted and loops. When it scrolls out of view it is paused
