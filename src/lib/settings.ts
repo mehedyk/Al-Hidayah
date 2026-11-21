@@ -6,6 +6,7 @@ const STORAGE_KEY = 'al-hidayah:settings:v1';
 export const defaultSettings: Settings = {
   theme: 'dark',
   scene: defaultSceneId,
+  reminderSource: 'quran',
   showEnglish: true,
   showBangla: true,
   textSize: 'default',
@@ -27,6 +28,7 @@ export function sanitizeSettings(value: unknown): Settings {
     ...defaultSettings,
     theme: themes.includes(saved.theme as Theme) ? (saved.theme as Theme) : defaultSettings.theme,
     scene: isSceneId(saved.scene) ? saved.scene : defaultSettings.scene,
+    reminderSource: saved.reminderSource === 'reviewed' ? 'reviewed' : 'quran',
     textSize: textSizes.includes(saved.textSize as TextSize)
       ? (saved.textSize as TextSize)
       : defaultSettings.textSize,
