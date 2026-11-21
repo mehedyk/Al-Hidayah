@@ -1,17 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { FooterMedia } from '../components/FooterMedia';
+import { LogoMark } from '../components/Icon';
 import { SiteFooter } from '../components/SiteFooter';
 ---
 
-<BaseLayout title="Page not found — Al-Hidayah" description="This page does not exist.">
-  <main id="main-content" class="not-found">
-    <p class="eyebrow">404</p>
-    <h1>This page doesn’t exist.</h1>
-    <p>The reminder you are looking for may have moved.</p>
-    <a class="button button--primary" href="/">
-      {' '}
-      Return home{' '}
-    </a>
-  </main>
-  <SiteFooter />
+<BaseLayout title="Page not found — Al-Hidayah" description="This page does not exist." route="404">
+  <div class="video-stage">
+    <FooterMedia />
+    <main id="main-content" class="not-found">
+      <LogoMark size={88} />
+      <p class="eyebrow">404</p>
+      <h1>This page doesn’t exist.</h1>
+      <p>The reminder you are looking for may have moved.</p>
+      <div class="not-found__actions">
+        <a class="button button--primary" href="/">Return home</a>
+        <a class="button button--secondary" href="/quran/">Browse the Qur’an</a>
+      </div>
+    </main>
+    <SiteFooter media={false} />
+  </div>
 </BaseLayout>
