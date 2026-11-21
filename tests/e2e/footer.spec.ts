@@ -50,3 +50,33 @@ test('404 page and footer have no critical accessibility violations', async ({ p
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((violation) => violation.impact === 'critical')).toEqual([]);
 });
+
+test('footer plays the supplied muted ink-landscape video, and the 404 page uses it too', async ({
+  page,
+}) => {
+  const videoUrl =
+    'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260901_122529_931c22c8-8d2d-47c0-ad51-b97f56a91e42.mp4';
+  const posterUrl =
+    'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/4f690bd1-881a-4192-82f2-d714d34c8fb9.png';
+
+  for (const path of ['/about/', '/this-page-does-not-exist']) {
+    await page.goto(path);
+    const video = page.locator('video.footer-bg');
+    await expect(video).toHaveCount(1);
+    await expect(video).toHaveAttribute('poster', posterUrl);
+    await expect(video.locator('source')).toHaveAttribute('src', videoUrl);
+    for (const attribute of ['autoplay', 'muted', 'loop', 'playsinline']) {
+      await expect(video).toHaveAttribute(attribute, /.*/);
+    }
+    // The clip is decorative and silent: hidden from assistive technology.
+    await expect(page.locator('.footer-media')).toHaveAttribute('aria-hidden', 'true');
+  }
+});
+
+test('reduced motion swaps the film for the still poster', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/about/');
+  await expect(page.locator('video.footer-bg')).toBeHidden();
+  const image = await page.locator('footer.site-footer').evaluate((node) => getComputedStyle(node).backgroundImage);
+  expect(image).toContain('4f690bd1-881a-4192-82f2-d714d34c8fb9.png');
+});
