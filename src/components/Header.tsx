@@ -1,14 +1,15 @@
 import { useApp } from '../lib/app-context';
 import type { Route } from '../lib/types';
+import { scenes, getScene } from '../lib/scenes';
 import { Icon, LogoMark } from './Icon';
 
 const navigation: Array<{
   route: Route;
   label: string;
-  icon: 'home' | 'info' | 'heart' | 'settings';
+  icon: 'home' | 'quran' | 'heart' | 'settings';
 }> = [
   { route: 'home', label: 'Home', icon: 'home' },
-  { route: 'about', label: 'About', icon: 'info' },
+  { route: 'quran', label: 'Qur’an', icon: 'quran' },
   { route: 'favorites', label: 'Favorites', icon: 'heart' },
   { route: 'settings', label: 'Settings', icon: 'settings' },
 ];
@@ -24,6 +25,8 @@ export function Header({ route, overHero = false }: { route: Route; overHero?: b
     (settings.theme === 'system' &&
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const scene = getScene(settings.scene);
+  const nextScene = scenes[(scenes.findIndex((item) => item.id === scene.id) + 1) % scenes.length];
   return (
     <header class={`site-header ${overHero ? 'site-header--hero' : ''}`}>
       <a class="brand" href="/" aria-label="Al-Hidayah home">
@@ -59,6 +62,15 @@ export function Header({ route, overHero = false }: { route: Route; overHero?: b
           <Icon name="sun" size={18} />
           <span />
           <Icon name="moon" size={17} />
+        </button>
+        <button
+          class="scene-toggle"
+          type="button"
+          onClick={() => updateSettings({ scene: nextScene.id })}
+          aria-label={`Scene: ${scene.name}. Switch to ${nextScene.name}`}
+          title={`Scene: ${scene.name}`}
+        >
+          <Icon name="palette" size={19} />
         </button>
         <a class="mobile-settings" href="/settings/" aria-label="Settings">
           <Icon name="settings" size={24} />
