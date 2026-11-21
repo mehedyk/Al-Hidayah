@@ -147,6 +147,21 @@ Every control below is exercised by an automated click-through that runs **under
 | **Footer / 404** | Muted autoplay film, every link resolves, poster under reduced motion |
 | **Hadith / Categories** | An honest review gate with a working exit; see below |
 
+### Listening, calm sounds, Bangla mode and share cards
+
+| Feature | How it works |
+| --- | --- |
+| **Qur'an recitation** | *Listen* on any verse, or *Play surah*. Seven reciters, speed 0.75-1.5x, auto-continue into the next verse and surah, the current verse is highlighted and scrolled into view. Audio is streamed verse by verse from [EveryAyah](https://everyayah.com) (nothing is bundled). That host is the only addition to the CSP's `media-src`. Add a reciter by appending a row to `src/lib/audio/recitation.ts`. |
+| **Calm sounds** | A floating mixer on every page: rain, wind, stream, ocean waves, morning birds and night crickets, each with its own volume, a master volume, four presets and a sleep timer. They are **synthesised on your device** with the Web Audio API, so there are no audio files, no licensing questions and no network use. Only natural sounds, no music. Your mix is remembered. |
+| **Bangla mode** | *Settings → Interface language*: English, বাংলা, or both together ("Home · হোম"). It translates the app's own labels, never the scripture. Bangla text uses **Kalpurush** when it is available (see below), otherwise Noto Serif Bengali. |
+| **Share Studio** | The card is now drawn on a canvas, so the preview is exactly the downloaded PNG (1080 px wide). Formats: Post, Story, Square. Templates: five built-in designs, the five scene photographs, and any pictures you add yourself. Actions: Download, Copy image, Share (where the browser supports it), Copy text, and direct links to WhatsApp, Telegram, X, Facebook and Email. |
+| **Hadi** | "Want to read it more comfortably?" links to [Hadi](https://hadi-quran-guide.vercel.app/) on the home card, the reader and the footer. |
+
+#### Two files only you can add
+
+1. **Kalpurush font**: download `kalpurush.ttf` from a source you trust, check its licence, and place it at `public/fonts/kalpurush.ttf`. Nothing else changes; until then the fallback font is used.
+2. **Your own card templates**: put licensed pictures in `public/share-templates/` and list them in `templates.json` (see the README in that folder). Good places: [Pexels](https://www.pexels.com/search/nature%20landscape/), [Unsplash](https://unsplash.com/s/photos/mountains) and [Pixabay](https://pixabay.com/images/search/landscape/), whose licences allow this kind of use. Keep the photographer's credit in the `credit` field.
+
 ### Why the buttons used to be dead
 
 ```mermaid
@@ -375,7 +390,7 @@ classDiagram
 | Site | Astro (static output), TypeScript strict, Preact app hydrated from one external script |
 | Motion and 3D | CSS first; GSAP and Three.js loaded lazily for the home hero only |
 | Data | JSON generated from byte-pinned datasets; no database in V1 |
-| Offline | Service worker with versioned caches (`al-hidayah-v2`) |
+| Offline | Service worker with versioned caches (`al-hidayah-v3`) |
 | Icons | Lucide, inlined (ISC) |
 | Hosting | Static, on Vercel or Netlify (free tiers) |
 | Quality | Vitest, Playwright, axe-core, ESLint, Prettier, `astro check` |
