@@ -1,3 +1,4 @@
+import { HADI_URL } from '../lib/links';
 import { reportUrl } from '../lib/app-context';
 import { FooterMedia } from './FooterMedia';
 import { Icon, LogoMark } from './Icon';
@@ -87,6 +88,11 @@ export function SiteFooter({ reference, media = true }: { reference?: string; me
               </li>
               <li>
                 <a href="/about/#credits">Photo and media credits</a>
+              </li>
+              <li>
+                <a href={HADI_URL} target="_blank" rel="noopener noreferrer">
+                  Read more comfortably in Hadi
+                </a>
               </li>
               <li>
                 <a href={reportUrl} target="_blank" rel="noreferrer">
