@@ -1,17 +1,19 @@
 import { useApp } from '../lib/app-context';
 import type { Route } from '../lib/types';
 import { scenes, getScene } from '../lib/scenes';
+import type { TextKey } from '../lib/i18n';
+import { useT } from '../lib/useT';
 import { Icon, LogoMark } from './Icon';
 
 const navigation: Array<{
   route: Route;
-  label: string;
+  label: TextKey;
   icon: 'home' | 'quran' | 'heart' | 'settings';
 }> = [
-  { route: 'home', label: 'Home', icon: 'home' },
-  { route: 'quran', label: 'Qur’an', icon: 'quran' },
-  { route: 'favorites', label: 'Favorites', icon: 'heart' },
-  { route: 'settings', label: 'Settings', icon: 'settings' },
+  { route: 'home', label: 'nav.home', icon: 'home' },
+  { route: 'quran', label: 'nav.quran', icon: 'quran' },
+  { route: 'favorites', label: 'nav.favorites', icon: 'heart' },
+  { route: 'settings', label: 'nav.settings', icon: 'settings' },
 ];
 
 function href(route: Route): string {
@@ -20,6 +22,7 @@ function href(route: Route): string {
 
 export function Header({ route, overHero = false }: { route: Route; overHero?: boolean }) {
   const { settings, updateSettings } = useApp();
+  const t = useT();
   const dark =
     settings.theme === 'dark' ||
     (settings.theme === 'system' &&
@@ -48,7 +51,7 @@ export function Header({ route, overHero = false }: { route: Route; overHero?: b
               size={18}
               filled={item.icon === 'heart' && route === item.route}
             />
-            {item.label}
+            {t(item.label)}
           </a>
         ))}
       </nav>
@@ -81,6 +84,7 @@ export function Header({ route, overHero = false }: { route: Route; overHero?: b
 }
 
 export function MobileNavigation({ route }: { route: Route }) {
+  const t = useT();
   return (
     <nav class="mobile-nav" aria-label="Mobile navigation">
       {navigation.map((item) => (
@@ -90,7 +94,7 @@ export function MobileNavigation({ route }: { route: Route }) {
           aria-current={route === item.route ? 'page' : undefined}
         >
           <Icon name={item.icon} size={22} filled={item.icon === 'heart' && route === item.route} />
-          <span>{item.label}</span>
+          <span>{t(item.label)}</span>
         </a>
       ))}
     </nav>
