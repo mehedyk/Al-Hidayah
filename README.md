@@ -132,6 +132,53 @@ sequenceDiagram
 
 ---
 
+## ⚙️ Everything is wired, and tested in a real browser
+
+Every control below is exercised by an automated click-through that runs **under the production Content-Security-Policy**.
+
+| Screen | What works |
+| --- | --- |
+| **Home** | *Get New Reminder* draws from all 6,236 verses (shuffle bag: no repeats in a pass, position survives reloads) · Save · Share Studio (copy text, download PNG, close) · *Open in the Qur'an reader* · *Read in context* · theme, scene and language toggles |
+| **Qur'an** | 114 surahs · Previous/Next · 30-juz jump · go-to-ayah · continue reading · search (English, Bangla, names, `2:255`) · Save/Share on any verse · deep links |
+| **Daily** | A verse for today, the same for everyone on the same local date, walking through the whole Qur'an · 7 catch-up days that open that verse · optional notifications |
+| **Prayer times** | Live times, next prayer highlighted, *Use my location*, cached fallback offline |
+| **Favorites** | Any verse · export JSON · import JSON (bad files rejected safely) · remove · share |
+| **Settings** | Theme · 5 scenes · text size · reduce motion · languages · reminder source · city · calculation method · daily time · clear local data |
+| **Footer / 404** | Muted autoplay film, every link resolves, poster under reduced motion |
+| **Hadith / Categories** | An honest review gate with a working exit; see below |
+
+### Why the buttons used to be dead
+
+```mermaid
+flowchart LR
+    subgraph Before["Before: Astro islands (client:load)"]
+        A1["Astro renders the HTML"] --> A2["Inline script starts hydration"]
+        A2 --> A3{"CSP: script-src 'self'"}
+        A3 -->|"inline script blocked"| A4["Page never hydrates<br/>links work, buttons are dead"]
+    end
+    subgraph After["Now: static HTML + one external module"]
+        B1["Astro renders HTML into #app-root"] --> B2["/_astro/*.js, same-origin module"]
+        B2 --> B3{"CSP: script-src 'self'"}
+        B3 -->|"allowed"| B4["hydrate(): every button is live"]
+    end
+```
+
+The site's strict CSP forbids inline scripts, but Astro islands start through inline scripts, so a production deploy rendered a page that looked right and did nothing. The dev server does not apply `_headers`, which is why it was missed. `AppRoot.astro` now renders the markup statically and hydrates it from a single bundled, same-origin script, so the strict CSP stays untouched. The first client render also starts from default settings so it matches the server HTML exactly.
+
+### Reminders from the whole Qur'an
+
+*Settings → Daily reminder → Where reminders come from* chooses the source:
+
+- **The entire Qur'an** (default): random reminders and the daily verse cover all 6,236 verses. The daily verse is a pure function of the local date, so it is identical on every device, and it walks the Qur'an in order, so successive days are successive verses.
+- **Only the owner-reviewed set**: the original two verses in `data/pools/reminder-pool.json`, which this code never modifies.
+
+Each reminder offers *Open in the Qur'an reader* so a verse is never stranded out of context.
+
+> [!IMPORTANT]
+> Hadith and thematic categories are still gated. They are religious-content decisions: the project rules forbid generating them, and verified Bukhari/Muslim data has to be supplied and reviewed by a named person. The pages say so plainly instead of showing placeholder content.
+
+---
+
 ## 🎨 Scene themes
 
 Five scenes pair real photography with a matching palette. Each works with **dark and light** modes. Switch from **Settings → Scene** or the palette button in the header; your choice is remembered on your device.
@@ -211,10 +258,10 @@ flowchart TD
 
 The mark is a mosque arch with a dome, two minarets and a guiding star. It **draws itself in once**, then the dome breathes softly and the star twinkles. It is pure CSS, costs no JavaScript, and is switched off under reduced motion (`LogoMark` in `src/components/Icon.tsx`, animation in `src/styles/global.css`).
 
-The icon set is hand-drawn, consistent (24×24, 1.7 stroke, round caps) and adds Qur'an, palette, bookmark, juz layers, sparkles, star, compass, play/pause and video glyphs. Closed shapes can opt into a **duotone** tint with `<Icon duo />`.
+Icons are **[Lucide](https://lucide.dev)** (ISC licence), the icon family used by most 21st.dev and shadcn components, inlined as path data so there is no runtime dependency and no network request. Closed shapes can opt into a **duotone** tint with `<Icon duo />`. The mosque glyph is our own, because Lucide has none.
 
-> [!TIP]
-> The 21st.dev MCP (`search_logo` for SVG icons, `get_component` for UI components) is a good source for further icons and components. It needs an API key kept **outside** the repository, for example in your own Claude Code MCP settings. Never commit the key.
+> [!NOTE]
+> The 21st.dev MCP itself could not be reached from the build environment, so no 21st.dev component code is vendored. If you want more of their components, connect it in your own Claude Code (`claude mcp add --transport http 21st https://21st.dev/api/mcp --header "x-api-key: <your key>"`). Keep the key outside the repository and rotate any key that has been pasted into a chat.
 
 ---
 
@@ -325,10 +372,11 @@ classDiagram
 
 | Layer | Choice |
 | --- | --- |
-| Site | Astro (static output), TypeScript strict, Preact islands |
+| Site | Astro (static output), TypeScript strict, Preact app hydrated from one external script |
 | Motion and 3D | CSS first; GSAP and Three.js loaded lazily for the home hero only |
 | Data | JSON generated from byte-pinned datasets; no database in V1 |
 | Offline | Service worker with versioned caches (`al-hidayah-v2`) |
+| Icons | Lucide, inlined (ISC) |
 | Hosting | Static, on Vercel or Netlify (free tiers) |
 | Quality | Vitest, Playwright, axe-core, ESLint, Prettier, `astro check` |
 | Later (V2) | A secured Node.js API and MongoDB Atlas for reviewer workflows; see [`docs/04-v2-mongodb-plan.md`](docs/04-v2-mongodb-plan.md) |
@@ -389,7 +437,9 @@ gantt
 | Complete Qur'an (114 surahs, 6,236 verses) | ✅ Implemented, integrity-tested against the frozen sources |
 | Search, juz, deep links, continue reading | ✅ Implemented |
 | Favorites for any verse, Share Studio | ✅ Implemented |
-| Scene themes, animated logo, icons, video footer, 404 | ✅ Implemented |
+| Scene themes, animated logo, Lucide icons, video footer, 404 | ✅ Implemented |
+| Whole-Qur'an random and daily reminders | ✅ Implemented |
+| Hydration under the strict CSP (every button live) | ✅ Fixed and covered by a test |
 | Hadith (Bukhari and Muslim) | ⏳ Awaiting reviewed data and a named reviewer |
 | Categories | ⏳ Awaiting reviewed files |
 | Release 1.0 gates | ⏳ Human content review, cross-browser Share Studio exports, header scan, real-device footer check |
@@ -412,6 +462,8 @@ pnpm dev             # http://localhost:4321
 ```
 
 Optional: `pnpm wallpapers:fetch` to self-host the scene photos.
+
+After `pnpm build`, run `pnpm preview` (or deploy) and check that the browser console shows **no** Content-Security-Policy errors on any page; that is the one thing a dev server cannot show you.
 
 The frozen source responses are already committed. Do not use `data:fetch -- --pin` unless an intentional source update has a named reviewer.
 
@@ -454,8 +506,8 @@ flowchart LR
 
 ```bash
 pnpm lint && pnpm typecheck
-pnpm test            # unit: data integrity, settings, scenes, deployment headers
-pnpm test:e2e        # reader, favorites, footer video, scenes, accessibility
+pnpm test            # unit: data integrity, reminders, settings, scenes, deployment headers
+pnpm test:e2e        # hydration under CSP, reminders, reader, favorites, footer video, scenes, a11y
 pnpm test:visual
 pnpm build
 pnpm release-gate    # the required static checks and production build
