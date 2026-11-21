@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 190" width="1080" height="190" role="img" aria-label="114 surahs, 6,236 verses, 30 juz, 3 languages, 5 scenes">
+<title>Al-Hidayah by the numbers</title>
+<style>text{font-family:Georgia,serif}.card{animation:up .9s cubic-bezier(.22,1,.36,1) both}@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}.card:hover rect{stroke-opacity:.9}@media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<g class="card" style="animation-delay:0.0s"><rect x="20" y="20" width="196" height="150" rx="20" fill="#0e3329" stroke="#e2b857" stroke-opacity=".35"/>
+<text x="118" y="86" text-anchor="middle" font-size="46" fill="#f3cf7d">114</text>
+<text x="118" y="118" text-anchor="middle" font-size="19" fill="#f3ead3" letter-spacing="2">SURAHS</text>
+<text x="118" y="145" text-anchor="middle" font-size="13" fill="#b9c7be" font-style="italic">all readable</text></g><g class="card" style="animation-delay:0.12s"><rect x="232" y="20" width="196" height="150" rx="20" fill="#0e3329" stroke="#e2b857" stroke-opacity=".35"/>
+<text x="330" y="86" text-anchor="middle" font-size="46" fill="#f3cf7d">6,236</text>
+<text x="330" y="118" text-anchor="middle" font-size="19" fill="#f3ead3" letter-spacing="2">VERSES</text>
+<text x="330" y="145" text-anchor="middle" font-size="13" fill="#b9c7be" font-style="italic">byte-pinned</text></g><g class="card" style="animation-delay:0.24s"><rect x="444" y="20" width="196" height="150" rx="20" fill="#0e3329" stroke="#e2b857" stroke-opacity=".35"/>
+<text x="542" y="86" text-anchor="middle" font-size="46" fill="#f3cf7d">30</text>
+<text x="542" y="118" text-anchor="middle" font-size="19" fill="#f3ead3" letter-spacing="2">JUZ</text>
+<text x="542" y="145" text-anchor="middle" font-size="13" fill="#b9c7be" font-style="italic">one-tap jump</text></g><g class="card" style="animation-delay:0.36s"><rect x="656" y="20" width="196" height="150" rx="20" fill="#0e3329" stroke="#e2b857" stroke-opacity=".35"/>
+<text x="754" y="86" text-anchor="middle" font-size="46" fill="#f3cf7d">3</text>
+<text x="754" y="118" text-anchor="middle" font-size="19" fill="#f3ead3" letter-spacing="2">LANGUAGES</text>
+<text x="754" y="145" text-anchor="middle" font-size="13" fill="#b9c7be" font-style="italic">AR · EN · BN</text></g><g class="card" style="animation-delay:0.48s"><rect x="868" y="20" width="196" height="150" rx="20" fill="#0e3329" stroke="#e2b857" stroke-opacity=".35"/>
+<text x="966" y="86" text-anchor="middle" font-size="46" fill="#f3cf7d">5</text>
+<text x="966" y="118" text-anchor="middle" font-size="19" fill="#f3ead3" letter-spacing="2">SCENES</text>
+<text x="966" y="145" text-anchor="middle" font-size="13" fill="#b9c7be" font-style="italic">real photography</text></g>
+</svg>
