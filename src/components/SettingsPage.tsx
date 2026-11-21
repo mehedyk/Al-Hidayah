@@ -3,10 +3,13 @@ import { clearFavorites } from '../lib/storage/favorites';
 import { defaultSettings } from '../lib/settings';
 import { reportUrl, useApp } from '../lib/app-context';
 import { scenes, wallpaperUrl } from '../lib/scenes';
+import { reciters } from '../lib/audio/recitation';
+import { useT } from '../lib/useT';
 import { Icon } from './Icon';
 
 export function SettingsPage() {
   const { settings, updateSettings, notify, refreshFavorites } = useApp();
+  const t = useT();
 
   const clearData = async () => {
     if (!window.confirm('Clear favorites and restore all settings on this device?')) return;
@@ -19,6 +22,53 @@ export function SettingsPage() {
 
   return (
     <div class="settings-page">
+      <section class="settings-group">
+        <div class="settings-group-heading">
+          <Icon name="languages" />
+          <div>
+            <h2>{t('settings.language')}</h2>
+            <p>The words of the Qur’an are never translated by the app; this changes its own labels.</p>
+          </div>
+        </div>
+        <div class="segmented-control" role="group" aria-label={t('settings.language')}>
+          {([
+            ['en', 'English'],
+            ['bn', 'বাংলা'],
+            ['both', 'English + বাংলা'],
+          ] as const).map(([value, label]) => (
+            <button
+              type="button"
+              key={value}
+              class={settings.uiLanguage === value ? 'selected' : ''}
+              aria-pressed={settings.uiLanguage === value}
+              onClick={() => updateSettings({ uiLanguage: value })}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <label class="field">
+          <span>Reciter</span>
+          <select
+            value={settings.reciter}
+            onChange={(event) => updateSettings({ reciter: event.currentTarget.value })}
+          >
+            {reciters.map((reciter) => (
+              <option value={reciter.id} key={reciter.id}>
+                {reciter.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label class="check-row">
+          <input
+            type="checkbox"
+            checked={settings.autoAdvance}
+            onChange={(event) => updateSettings({ autoAdvance: event.currentTarget.checked })}
+          />{' '}
+          Keep playing the next verse automatically
+        </label>
+      </section>
       <section class="settings-group">
         <div class="settings-group-heading">
           <Icon name="sun" />
