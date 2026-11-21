@@ -21,7 +21,18 @@ export type IconName =
   | 'chevron'
   | 'search'
   | 'upload'
-  | 'trash';
+  | 'trash'
+  | 'quran'
+  | 'palette'
+  | 'sparkles'
+  | 'bookmark'
+  | 'star'
+  | 'compass'
+  | 'play'
+  | 'pause'
+  | 'layers'
+  | 'arrowUp'
+  | 'video';
 
 const paths: Record<IconName, preact.ComponentChild> = {
   home: (
@@ -133,6 +144,51 @@ const paths: Record<IconName, preact.ComponentChild> = {
       <path d="M12 16V4M7 9l5-5 5 5M4 20h16" />
     </>
   ),
+  quran: (
+    <>
+      <path d="M4 5.5c3-1.2 5.6-.9 8 .9 2.4-1.8 5-2.1 8-.9V19c-3-1.2-5.6-.9-8 .9-2.4-1.8-5-2.1-8-.9Z" />
+      <path d="M12 6.4V19.9M7 9.5c1.2-.1 2.3.1 3.2.6M14 10.1c.9-.5 2-.7 3.2-.6" />
+    </>
+  ),
+  palette: (
+    <>
+      <path d="M12 3a9 9 0 1 0 0 18c1.5 0 2.1-1.1 1.6-2.3-.5-1.2.3-2.4 1.6-2.4H17a4 4 0 0 0 4-4c0-5-4-9.3-9-9.3Z" />
+      <circle cx="7.6" cy="11.2" r="1" />
+      <circle cx="10.4" cy="7.4" r="1" />
+      <circle cx="15" cy="7.6" r="1" />
+    </>
+  ),
+  sparkles: (
+    <>
+      <path d="m11 3 1.9 5.1L18 10l-5.1 1.9L11 17l-1.9-5.1L4 10l5.1-1.9Z" />
+      <path d="M19 15v4M17 17h4" />
+    </>
+  ),
+  bookmark: <path d="M6 3.5h12v17l-6-4.2-6 4.2Z" />,
+  star: (
+    <path d="m12 2.5 2.5 4.1 4.8-1.1-1.1 4.8 4.1 2.5-4.1 2.5 1.1 4.8-4.8-1.1L12 22.5l-2.5-4.1-4.8 1.1 1.1-4.8L1.7 12.1l4.1-2.5-1.1-4.8 4.8 1.1Z" />
+  ),
+  compass: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m15.6 8.4-2.1 5.1-5.1 2.1 2.1-5.1Z" />
+    </>
+  ),
+  play: <path d="M8 4.5 19 12 8 19.5Z" />,
+  pause: <path d="M8 4.5v15M16 4.5v15" />,
+  layers: (
+    <>
+      <path d="m12 3 9 5-9 5-9-5Z" />
+      <path d="m3 12.5 9 5 9-5M3 17l9 5 9-5" />
+    </>
+  ),
+  arrowUp: <path d="M12 19V5M6 11l6-6 6 6" />,
+  video: (
+    <>
+      <rect x="3" y="6" width="13" height="12" rx="2" />
+      <path d="m16 10.5 5-2.8v8.6l-5-2.8" />
+    </>
+  ),
   trash: (
     <>
       <path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6" />
@@ -144,15 +200,18 @@ export function Icon({
   name,
   size = 20,
   filled = false,
+  duo = false,
 }: {
   name: IconName;
   size?: number;
   filled?: boolean;
+  /** Duotone: a soft tint fills the shapes for a richer, premium look. */
+  duo?: boolean;
 }) {
   return (
     <svg
       aria-hidden="true"
-      class="icon"
+      class={duo ? 'icon icon--duo' : 'icon'}
       width={size}
       height={size}
       viewBox="0 0 24 24"
@@ -167,7 +226,12 @@ export function Icon({
   );
 }
 
-export function LogoMark({ size = 54 }: { size?: number }) {
+/**
+ * The Al-Hidayah mark: a mosque arch with a dome, minarets and a guiding crescent star.
+ * It draws itself in once, then the dome breathes softly and the star twinkles.
+ * All motion is CSS (see .logo-mark in global.css) and stops under reduced motion.
+ */
+export function LogoMark({ size = 54, animated = true }: { size?: number; animated?: boolean }) {
   return (
     <svg
       aria-hidden="true"
@@ -175,24 +239,36 @@ export function LogoMark({ size = 54 }: { size?: number }) {
       height={size}
       viewBox="0 0 64 64"
       fill="none"
-      class="logo-mark"
+      class={animated ? 'logo-mark logo-mark--animated' : 'logo-mark'}
     >
       <path
+        class="lm-arch"
+        pathLength="1"
         d="M8 56V29C8 17 19 12 32 3c13 9 24 14 24 26v27H8Z"
         stroke="currentColor"
         stroke-width="2"
       />
       <path
+        class="lm-arch lm-arch--inner"
+        pathLength="1"
         d="M15 56V31c0-9 7-13 17-20 10 7 17 11 17 20v25"
         stroke="currentColor"
         stroke-width="1"
         opacity=".65"
       />
+      <g class="lm-body">
+        <path
+          class="lm-dome"
+          d="M19 50h26M22 50V39h20v11M26 39v-5m12 5v-5M32 21c5 5 7 8 7 12H25c0-4 2-7 7-12Z"
+          fill="currentColor"
+        />
+        <path d="M15 32h3v18h-3zm31 0h3v18h-3zM13 29h5v3h-5zm33 0h5v3h-5z" fill="currentColor" />
+      </g>
       <path
-        d="M19 50h26M22 50V39h20v11M26 39v-5m12 5v-5M32 21c5 5 7 8 7 12H25c0-4 2-7 7-12Z"
+        class="lm-star"
+        d="m32 12.2.9 2.3 2.4.2-1.9 1.6.6 2.4-2-1.4-2 1.4.6-2.4-1.9-1.6 2.4-.2Z"
         fill="currentColor"
       />
-      <path d="M15 32h3v18h-3zm31 0h3v18h-3zM13 29h5v3h-5zm33 0h5v3h-5z" fill="currentColor" />
     </svg>
   );
 }
