@@ -23,6 +23,12 @@ A dune photo with two silhouetted people was considered and rejected; scenes mus
 
 Supplied by the project owner, used verbatim from the URLs in `src/lib/media.ts` (not downloaded).
 
+## Icons
+
+Lucide (<https://lucide.dev>), ISC licence, inlined as path data in `src/components/Icon.tsx`.
+Copyright (c) Lucide Contributors; portions (c) Cole Bemis 2013-2022 (Feather, MIT).
+The mosque glyph and the Al-Hidayah logo mark are original.
+
 ## README figures
 
 `docs/assets/*.svg` are original, hand-authored animated SVGs.
