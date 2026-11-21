@@ -1,5 +1,9 @@
-import { dailyItemId, localDateKey } from '../lib/daily/dailyItem';
-import { getItem, items, formatShortReference } from '../lib/data';
+import { useEffect, useState } from 'preact/hooks';
+import { localDateKey } from '../lib/daily/dailyItem';
+import { items } from '../lib/data';
+import { dailyReminderId, shortReferenceFromId } from '../lib/reminders';
+import { resolveItem } from '../lib/quranLibrary';
+import type { Item } from '../lib/types';
 import { useApp } from '../lib/app-context';
 import { Icon } from './Icon';
 import { ReminderCard } from './ReminderCard';
@@ -7,11 +11,27 @@ import { ReminderCard } from './ReminderCard';
 export function DailyPage() {
   const { settings, updateSettings, notify } = useApp();
   const today = new Date();
-  const item = getItem(dailyItemId(today, items)) ?? items[0];
-  const previous = Array.from({ length: 5 }, (_, index) => {
+  const [item, setItem] = useState<Item>(items[0]);
+  const [failed, setFailed] = useState(false);
+  const previous = Array.from({ length: 7 }, (_, index) => {
     const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - index - 1);
-    return { date, item: getItem(dailyItemId(date, items)) ?? items[0] };
+    return { date, id: dailyReminderId(date, settings.reminderSource) };
   });
+
+  useEffect(() => {
+    let active = true;
+    setFailed(false);
+    void resolveItem(dailyReminderId(new Date(), settings.reminderSource))
+      .then((found) => {
+        if (active && found) setItem(found);
+      })
+      .catch(() => {
+        if (active) setFailed(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [settings.reminderSource]);
 
   const toggleDaily = async () => {
     if (settings.dailyEnabled) {
@@ -44,7 +64,12 @@ export function DailyPage() {
           {localDateKey(today)}
         </p>
       </div>
-      <ReminderCard item={item} title="Your daily reminder" />
+      {failed && (
+        <p class="inline-notice" role="status">
+          Today’s verse could not be loaded. Check your connection and reload.
+        </p>
+      )}
+      <ReminderCard key={item.id} item={item} title="Your daily reminder" />
       <section class="daily-controls">
         <div>
           <h2>A quiet nudge, at your time</h2>
@@ -78,8 +103,8 @@ export function DailyPage() {
             <h2>Yesterday and the days before</h2>
           </div>
         </div>
-        {previous.map(({ date, item: previousItem }) => (
-          <a href={`/?item=${previousItem.id}`}>
+        {previous.map(({ date, id }) => (
+          <a href={`/?item=${id}`}>
             <span>
               {date.toLocaleDateString('en-GB', {
                 weekday: 'short',
@@ -87,7 +112,7 @@ export function DailyPage() {
                 month: 'short',
               })}
             </span>
-            <strong>{formatShortReference(previousItem)}</strong>
+            <strong>{shortReferenceFromId(id)}</strong>
             <Icon name="chevron" />
           </a>
         ))}
