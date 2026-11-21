@@ -1,43 +1,75 @@
-import type { CSSProperties } from 'preact';
-import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
-import { toPng } from 'html-to-image';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { formatReference } from '../lib/data';
 import { reminderText } from '../lib/share/shareText';
 import { useApp } from '../lib/app-context';
+import { useT } from '../lib/useT';
+import {
+  builtInTemplates,
+  loadCustomTemplates,
+  photoTemplates,
+  type CardTemplate,
+} from '../lib/share/templates';
+import {
+  canvasToBlob,
+  cardSizes,
+  renderCard,
+  type CardFormat,
+  type CardResult,
+} from '../lib/share/renderCard';
 import type { Item } from '../lib/types';
-import { Icon, LogoMark, Ornament } from './Icon';
+import { Icon, type IconName } from './Icon';
 
-type Format = 'post' | 'story' | 'square';
-type ShareTheme = 'emerald' | 'midnight' | 'cream';
-
-const dimensions: Record<Format, { width: number; height: number; label: string }> = {
-  post: { width: 540, height: 675, label: 'Post · 4:5' },
-  story: { width: 540, height: 960, label: 'Story · 9:16' },
-  square: { width: 540, height: 540, label: 'Square · 1:1' },
-};
+function shareTargets(item: Item, text: string): Array<{ name: string; href: string; icon: IconName }> {
+  const link = item.contextUrl;
+  const encoded = encodeURIComponent;
+  const bare = reminderText(item, true, false).replace(`\n\n${link}`, '');
+  return [
+    { name: 'WhatsApp', href: `https://wa.me/?text=${encoded(text)}`, icon: 'send' },
+    {
+      name: 'Telegram',
+      href: `https://t.me/share/url?url=${encoded(link)}&text=${encoded(bare)}`,
+      icon: 'send',
+    },
+    {
+      name: 'X',
+      href: `https://twitter.com/intent/tweet?text=${encoded(`${item.en}\n${formatReference(item)}`.slice(0, 250))}&url=${encoded(link)}`,
+      icon: 'external',
+    },
+    {
+      name: 'Facebook',
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encoded(link)}`,
+      icon: 'external',
+    },
+    {
+      name: 'Email',
+      href: `mailto:?subject=${encoded(formatReference(item))}&body=${encoded(text)}`,
+      icon: 'mail',
+    },
+  ];
+}
 
 export function ShareStudio({ item, onClose }: { item: Item; onClose: () => void }) {
   const { settings, notify } = useApp();
+  const t = useT();
   const dialog = useRef<HTMLDialogElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
-  const artwork = useRef<HTMLDivElement>(null);
-  const [format, setFormat] = useState<Format>('post');
-  const [theme, setTheme] = useState<ShareTheme>('emerald');
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const [format, setFormat] = useState<CardFormat>('post');
+  const [templates, setTemplates] = useState<CardTemplate[]>([...builtInTemplates, ...photoTemplates]);
+  const [templateId, setTemplateId] = useState('emerald');
   const [showEnglish, setShowEnglish] = useState(settings.showEnglish);
   const [showBangla, setShowBangla] = useState(settings.showBangla);
-  const [previewScale, setPreviewScale] = useState(0.7);
-  const [fontScale, setFontScale] = useState(1);
-  const [fontsReady, setFontsReady] = useState(false);
-  const [overflow, setOverflow] = useState(false);
+  const [result, setResult] = useState<CardResult>();
   const [busy, setBusy] = useState(false);
   const [canShareFiles, setCanShareFiles] = useState(false);
-  const size = dimensions[format];
+  const template = templates.find((entry) => entry.id === templateId) ?? templates[0];
   const text = reminderText(item, showEnglish, showBangla);
+  const size = cardSizes[format];
 
   useEffect(() => {
     const element = dialog.current;
     if (!element) return;
     element.showModal();
+    // Keep the page behind the dialog still. CSSOM style writes are allowed by the strict CSP.
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     setCanShareFiles(
@@ -51,110 +83,91 @@ export function ShareStudio({ item, onClose }: { item: Item; onClose: () => void
   }, []);
 
   useEffect(() => {
-    const element = stage.current;
-    if (!element) return;
-    const resize = () => {
-      const availableWidth = Math.max(element.clientWidth - 24, 220);
-      const availableHeight = Math.max(element.clientHeight - 24, 320);
-      setPreviewScale(Math.min(availableWidth / size.width, availableHeight / size.height, 1));
-    };
-    const observer = new ResizeObserver(resize);
-    observer.observe(element);
-    resize();
-    return () => observer.disconnect();
-  }, [size.width, size.height]);
-
-  useEffect(() => {
     let active = true;
-    void document.fonts.ready.then(() => {
-      if (active) setFontsReady(true);
+    void loadCustomTemplates().then((custom) => {
+      if (active && custom.length) setTemplates((current) => [...current, ...custom]);
     });
     return () => {
       active = false;
     };
   }, []);
 
-  useLayoutEffect(() => {
-    const element = artwork.current;
-    const frame = element?.querySelector('.share-frame');
-    if (!element || !frame) return;
-    const doesOverflow =
-      frame.scrollHeight > frame.clientHeight + 2 || frame.scrollWidth > frame.clientWidth + 2;
-    setOverflow(doesOverflow && fontScale <= 0.72 && format === 'story');
-    if (doesOverflow && fontScale > 0.72) {
-      setFontScale((value) => Math.max(0.72, value - 0.04));
-    } else if (doesOverflow && format !== 'story') {
-      setFormat('story');
-      setFontScale(0.82);
-      notify('The layout moved to Story so every word remains visible.');
-    }
-  }, [item, format, showEnglish, showBangla, fontScale, fontsReady, notify]);
-
-  const renderImage = async (): Promise<string> => {
-    if (overflow)
-      throw new Error('This reminder needs a taller custom layout before it can be exported.');
-    const element = artwork.current;
-    if (!element) throw new Error('The preview is not ready.');
-    await document.fonts.ready;
-    await Promise.all([
-      document.fonts.load('400 32px "Amiri Quran"'),
-      document.fonts.load('400 20px "Noto Serif Bengali"'),
-      document.fonts.load('400 20px "Cormorant Garamond"'),
-    ]);
-    const options = {
-      width: size.width,
-      height: size.height,
-      cacheBust: false,
-      style: { transform: 'none', margin: '0' },
+  // The preview is the very canvas that is exported, so what you see is what you get.
+  useEffect(() => {
+    const element = canvas.current;
+    if (!element) return;
+    let active = true;
+    void renderCard(element, { item, format, template, showEnglish, showBangla })
+      .then((value) => {
+        if (active) setResult(value);
+      })
+      .catch(() => {
+        if (active) notify('The preview could not be drawn in this browser.');
+      });
+    return () => {
+      active = false;
     };
-    await toPng(element, { ...options, pixelRatio: 0.25 });
-    return toPng(element, { ...options, pixelRatio: 1080 / size.width });
+  }, [item, format, template, showEnglish, showBangla, notify]);
+
+  const blocked = busy || !result || result.overflow;
+  const fileName = `al-hidayah-${item.id.replaceAll(':', '-')}-${format}.png`;
+
+  const getBlob = async (): Promise<Blob> => {
+    const element = canvas.current;
+    if (!element) throw new Error('The preview is not ready.');
+    try {
+      return await canvasToBlob(element);
+    } catch {
+      throw new Error('The image could not be created. Try the Emerald template.');
+    }
   };
 
-  const download = async () => {
+  const run = async (task: () => Promise<void>) => {
     setBusy(true);
     try {
-      const dataUrl = await renderImage();
-      const link = document.createElement('a');
-      link.download = `al-hidayah-${item.id.replaceAll(':', '-')}-${format}.png`;
-      link.href = dataUrl;
-      link.click();
-      notify('Image saved.');
+      await task();
     } catch (error) {
-      notify(
-        error instanceof Error ? error.message : 'The image could not be saved. Please try again.',
-      );
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      notify(error instanceof Error ? error.message : 'That did not work. Please try again.');
     } finally {
       setBusy(false);
     }
   };
 
-  const share = async () => {
-    if (!canShareFiles) return;
-    setBusy(true);
-    try {
-      const dataUrl = await renderImage();
-      const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], `al-hidayah-${item.id.replaceAll(':', '-')}.png`, {
-        type: 'image/png',
-      });
+  const download = () =>
+    run(async () => {
+      const blob = await getBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = url;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      notify('Image saved.');
+    });
+
+  const copyImage = () =>
+    run(async () => {
+      if (typeof ClipboardItem === 'undefined' || !navigator.clipboard?.write)
+        throw new Error('This browser cannot copy images. Use Download image instead.');
+      const blob = await getBlob();
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      notify('Image copied. Paste it into any chat.');
+    });
+
+  const nativeShare = () =>
+    run(async () => {
+      const blob = await getBlob();
+      const file = new File([blob], fileName, { type: 'image/png' });
       if (!navigator.canShare({ files: [file] }))
         throw new Error('This browser cannot share images directly. Download the image instead.');
       await navigator.share({ files: [file], text, title: formatReference(item) });
       notify('Ready to send.');
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') return;
-      notify(
-        error instanceof Error
-          ? error.message
-          : 'Sharing was unavailable. Download the image instead.',
-      );
-    } finally {
-      setBusy(false);
-    }
-  };
+    });
 
-  const copy = async () => {
+  const copyText = async () => {
     try {
       await navigator.clipboard.writeText(text);
       notify('Reminder and reference copied.');
@@ -168,68 +181,36 @@ export function ShareStudio({ item, onClose }: { item: Item; onClose: () => void
       <div class="share-header">
         <div>
           <p class="eyebrow">Share Studio</p>
-          <h2 id="share-title">Share this reminder</h2>
+          <h2 id="share-title">{t('share.title')}</h2>
         </div>
         <button class="icon-button" type="button" onClick={onClose} aria-label="Close Share Studio">
           <Icon name="close" />
         </button>
       </div>
       <div class="share-layout">
-        <div class="share-preview" ref={stage}>
+        <div class="share-preview">
           <div class="share-preview-label">
             <span>Live preview</span>
             <small>
-              {size.width * 2} × {size.height * 2} PNG
+              {size.width} × {size.height} PNG
             </small>
           </div>
-          <div
-            class="share-canvas-positioner"
-            style={{
-              width: `${size.width * previewScale}px`,
-              height: `${size.height * previewScale}px`,
-            }}
-          >
-            <div
-              ref={artwork}
-              class={`share-artwork share-artwork--${theme}`}
-              style={
-                {
-                  width: `${size.width}px`,
-                  height: `${size.height}px`,
-                  transform: `scale(${previewScale})`,
-                  '--share-font-scale': fontScale,
-                } as CSSProperties
-              }
-            >
-              <div class="share-frame">
-                <Ornament />
-                <p class="share-kicker">A reminder for the heart</p>
-                <div class="share-artwork-body">
-                  <p class="share-arabic" lang="ar" dir="rtl">
-                    {item.ar}
-                  </p>
-                  {showEnglish && (
-                    <p class="share-english" lang="en">
-                      {item.en}
-                    </p>
-                  )}
-                  {showBangla && (
-                    <p class="share-bangla" lang="bn">
-                      {item.bn}
-                    </p>
-                  )}
-                </div>
-                <p class="share-reference">{formatReference(item)}</p>
-                <div class="share-brand">
-                  <LogoMark size={30} />
-                  <span>Al-Hidayah</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          {overflow && (
+          <canvas
+            ref={canvas}
+            class="share-canvas"
+            width={size.width}
+            height={size.height}
+            role="img"
+            aria-label={`Share card for ${formatReference(item)}`}
+          />
+          {result?.overflow && (
             <p class="inline-notice" role="alert">
-              This reminder needs a taller custom layout. Export is paused so no text can be cut.
+              This verse is too long for this shape. Choose Story, or hide a translation.
+            </p>
+          )}
+          {template.photoUrl && result && !result.photo && (
+            <p class="inline-notice" role="status">
+              The photo could not be loaded, so a plain background is used instead.
             </p>
           )}
         </div>
@@ -237,32 +218,44 @@ export function ShareStudio({ item, onClose }: { item: Item; onClose: () => void
           <fieldset>
             <legend>Format</legend>
             <div class="segmented-control">
-              {Object.entries(dimensions).map(([value, option]) => (
-                <button
-                  type="button"
-                  class={format === value ? 'selected' : ''}
-                  onClick={() => {
-                    setFormat(value as Format);
-                    setFontScale(1);
-                  }}
-                >
-                  {option.label}
-                </button>
-              ))}
+              {(Object.entries(cardSizes) as Array<[CardFormat, (typeof cardSizes)[CardFormat]]>).map(
+                ([value, option]) => (
+                  <button
+                    type="button"
+                    key={value}
+                    class={format === value ? 'selected' : ''}
+                    aria-pressed={format === value}
+                    onClick={() => setFormat(value)}
+                  >
+                    {option.label}
+                  </button>
+                ),
+              )}
             </div>
           </fieldset>
           <fieldset>
-            <legend>Theme</legend>
-            <div class="theme-swatches">
-              {(['emerald', 'midnight', 'cream'] as const).map((value) => (
+            <legend>Template</legend>
+            <div class="template-grid">
+              {templates.map((entry) => (
                 <button
                   type="button"
-                  class={`theme-swatch theme-swatch--${value} ${theme === value ? 'selected' : ''}`}
-                  onClick={() => setTheme(value)}
-                  aria-label={`${value} artwork theme`}
-                  aria-pressed={theme === value}
+                  key={entry.id}
+                  class={`template-chip ${templateId === entry.id ? 'selected' : ''}`}
+                  aria-pressed={templateId === entry.id}
+                  onClick={() => setTemplateId(entry.id)}
+                  title={entry.credit ?? entry.name}
                 >
-                  <span>{value}</span>
+                  <span
+                    class="template-chip__swatch"
+                    data-colors={`${entry.colors[0]},${entry.colors[1]}`}
+                    ref={(node) => {
+                      if (node)
+                        node.style.background = `linear-gradient(160deg, ${entry.colors[0]}, ${entry.colors[1]})`;
+                    }}
+                  >
+                    {entry.kind !== 'built-in' && <Icon name="image" size={14} />}
+                  </span>
+                  <span>{entry.name}</span>
                 </button>
               ))}
             </div>
@@ -293,59 +286,42 @@ export function ShareStudio({ item, onClose }: { item: Item; onClose: () => void
             <Icon name="check" size={16} /> The exact reference is always included.
           </p>
           <div class="share-buttons">
-            <button
-              class="button button--primary"
-              type="button"
-              disabled={busy || overflow}
-              onClick={() => void download()}
-            >
+            <button class="button button--primary" type="button" disabled={blocked} onClick={() => void download()}>
               <Icon name="download" />
               {busy ? 'Preparing…' : 'Download image'}
             </button>
+            <button class="button button--secondary" type="button" disabled={blocked} onClick={() => void copyImage()}>
+              <Icon name="clipboardImage" />
+              Copy image
+            </button>
             {canShareFiles && (
-              <button
-                class="button button--secondary"
-                type="button"
-                disabled={busy || overflow}
-                onClick={() => void share()}
-              >
+              <button class="button button--secondary" type="button" disabled={blocked} onClick={() => void nativeShare()}>
                 <Icon name="share" />
-                Send as message
+                Share…
               </button>
             )}
-            <button class="button button--ghost" type="button" onClick={() => void copy()}>
+            <button class="button button--ghost" type="button" onClick={() => void copyText()}>
               <Icon name="copy" />
               Copy text
             </button>
           </div>
-          {!canShareFiles && (
-            <div class="share-fallback">
-              <p>
-                This browser cannot attach images to a share sheet. Download the image, then attach
-                it in your messaging app.
-              </p>
-              <a
-                class="button button--secondary"
-                href={`https://wa.me/?text=${encodeURIComponent(text)}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open WhatsApp
-              </a>
-              <a
-                class="button button--ghost"
-                href="https://www.messenger.com/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open Messenger
-              </a>
-              <small>
-                Copy the text first for Messenger. Instagram also needs the downloaded image
-                attached by hand.
-              </small>
+          <div class="share-fallback">
+            <p>Send the text straight to an app (attach the downloaded image there if you like):</p>
+            <div class="share-targets">
+              {shareTargets(item, text).map((target) => (
+                <a
+                  class="button button--ghost"
+                  key={target.name}
+                  href={target.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon name={target.icon} size={16} /> {target.name}
+                </a>
+              ))}
             </div>
-          )}
+            <small>Instagram and Messenger have no web share link: download the image and attach it.</small>
+          </div>
         </div>
       </div>
     </dialog>
