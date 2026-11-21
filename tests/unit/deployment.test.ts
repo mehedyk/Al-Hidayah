@@ -58,6 +58,17 @@ describe('static deployment configuration', () => {
     expect(vercelHeaders('/(.*)')).toEqual(netlifyRule('/*'));
   });
 
+  it('allows only the supplied media hosts, and nothing broader', () => {
+    const csp = vercelHeaders('/(.*)')['Content-Security-Policy'];
+    expect(csp).toContain("media-src 'self' https://d8j0ntlcm91z4.cloudfront.net;");
+    expect(csp).toContain('https://d2ol7oe51mr4n9.cloudfront.net');
+    expect(csp).toContain('https://images.pexels.com');
+    expect(csp).toContain("script-src 'self';");
+    expect(csp).not.toContain('unsafe-inline');
+    expect(csp).not.toContain('unsafe-eval');
+    expect(csp).not.toMatch(/(?:img|media)-src[^;]*\*/);
+  });
+
   it.each([
     ['/assets/(.*)', '/assets/*'],
     ['/images/(.*)', '/images/*'],
