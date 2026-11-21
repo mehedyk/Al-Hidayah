@@ -16,6 +16,7 @@
     "data:validate": "tsx scripts/validate-data.ts",
     "data:build": "tsx scripts/build-data.ts",
     "data:verify": "tsx scripts/verify-checksums.ts",
+    "wallpapers:fetch": "tsx scripts/fetch-wallpapers.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
