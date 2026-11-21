@@ -2,6 +2,7 @@ import { cities } from '../lib/prayer';
 import { clearFavorites } from '../lib/storage/favorites';
 import { defaultSettings } from '../lib/settings';
 import { reportUrl, useApp } from '../lib/app-context';
+import { scenes, wallpaperUrl } from '../lib/scenes';
 import { Icon } from './Icon';
 
 export function SettingsPage() {
@@ -26,6 +27,41 @@ export function SettingsPage() {
             <p>Make the interface comfortable for you.</p>
           </div>
         </div>
+        <fieldset class="scene-picker">
+          <legend>Scene</legend>
+          <p class="scene-picker__hint">
+            Real photography behind every page. Pair any scene with dark or light.
+          </p>
+          <div class="scene-grid">
+            {scenes.map((scene) => (
+              <label class={`scene-card ${settings.scene === scene.id ? 'is-active' : ''}`}>
+                <input
+                  type="radio"
+                  name="scene"
+                  value={scene.id}
+                  checked={settings.scene === scene.id}
+                  onChange={() => updateSettings({ scene: scene.id })}
+                />
+                <img
+                  src={wallpaperUrl(scene, 400)}
+                  alt=""
+                  width="400"
+                  height="260"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="scene-card__text">
+                  <strong>{scene.name}</strong>
+                  <small>{scene.mood}</small>
+                </span>
+                {settings.scene === scene.id && <Icon name="check" size={18} />}
+              </label>
+            ))}
+          </div>
+          <a class="text-link" href="/about/#credits">
+            Photo credits <Icon name="arrow" size={16} />
+          </a>
+        </fieldset>
         <label class="field">
           <span>Theme</span>
           <select
