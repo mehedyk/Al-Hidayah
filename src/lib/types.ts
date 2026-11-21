@@ -39,11 +39,14 @@ export interface Item {
 }
 
 export type Theme = 'dark' | 'light' | 'system';
+/** Where reminders are drawn from: the whole Qur'an, or only the owner-reviewed set. */
+export type ReminderSource = 'quran' | 'reviewed';
 export type TextSize = 'small' | 'default' | 'large' | 'extra-large';
 
 export interface Settings {
   theme: Theme;
   scene: SceneId;
+  reminderSource: ReminderSource;
   showEnglish: boolean;
   showBangla: boolean;
   textSize: TextSize;
