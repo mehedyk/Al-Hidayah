@@ -23,7 +23,9 @@ export function dealNext(
 ): { id: string; state: ShuffleBagState } {
   if (poolIds.length === 0) throw new Error('The reviewed reminder pool is empty.');
   const poolKey = poolIds.join('|');
-  let bag = state.poolKey === poolKey ? state.bag.filter((id) => poolIds.includes(id)) : [];
+  // A Set keeps this linear even for the 6,236-verse Qur'an pool.
+  const inPool = new Set(poolIds);
+  let bag = state.poolKey === poolKey ? state.bag.filter((id) => inPool.has(id)) : [];
   let position = state.poolKey === poolKey ? Math.min(state.position, bag.length) : bag.length;
 
   if (position >= bag.length) {
