@@ -1,3 +1,5 @@
+import type { SceneId } from './scenes';
+
 export type Route =
   | 'home'
   | 'quran'
@@ -41,6 +43,7 @@ export type TextSize = 'small' | 'default' | 'large' | 'extra-large';
 
 export interface Settings {
   theme: Theme;
+  scene: SceneId;
   showEnglish: boolean;
   showBangla: boolean;
   textSize: TextSize;
