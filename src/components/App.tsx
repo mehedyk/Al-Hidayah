@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { AppContext } from '../lib/app-context';
-import { loadSettings, saveSettings } from '../lib/settings';
-import { getItem, items, formatReference } from '../lib/data';
-import { dailyItemId, localDateKey } from '../lib/daily/dailyItem';
+import { defaultSettings, loadSettings, saveSettings } from '../lib/settings';
+import { formatReference } from '../lib/data';
+import { localDateKey } from '../lib/daily/dailyItem';
+import { dailyReminderId } from '../lib/reminders';
+import { resolveItem } from '../lib/quranLibrary';
 import { listFavorites, removeFavorite, saveFavorite } from '../lib/storage/favorites';
 import { getScene, wallpaperUrl } from '../lib/scenes';
 import type { Item, Route, Settings } from '../lib/types';
@@ -65,7 +67,9 @@ const pageCopy: Record<
 };
 
 export function App({ route }: { route: Route }) {
-  const [settings, setSettings] = useState<Settings>(loadSettings);
+  // Start from defaults so the first client render matches the server HTML exactly (hydration
+  // never patches a mismatch); the saved settings are applied right after mount, below.
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [settingsReady, setSettingsReady] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<ReadonlySet<string>>(new Set());
   const [shareItem, setShareItem] = useState<Item | null>(null);
@@ -142,16 +146,18 @@ export function App({ route }: { route: Route }) {
       const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       const key = `al-hidayah:notified:${localDateKey(now)}`;
       if (time !== settings.dailyTime || localStorage.getItem(key)) return;
-      const item = getItem(dailyItemId(now, items)) ?? items[0];
-      void new Notification('Today’s Al-Hidayah reminder', {
-        body: `${item.en}\n${formatReference(item)}`,
-      });
       localStorage.setItem(key, 'shown');
+      void resolveItem(dailyReminderId(now, settings.reminderSource)).then((item) => {
+        if (!item) return;
+        new Notification('Today’s Al-Hidayah reminder', {
+          body: `${item.en}\n${formatReference(item)}`,
+        });
+      });
     };
     check();
     const timer = setInterval(check, 20_000);
     return () => clearInterval(timer);
-  }, [settings.dailyEnabled, settings.dailyTime]);
+  }, [settings.dailyEnabled, settings.dailyTime, settings.reminderSource]);
 
   const toggleFavorite = useCallback(
     async (item: Item) => {
