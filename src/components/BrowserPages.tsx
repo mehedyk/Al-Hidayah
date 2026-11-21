@@ -2,7 +2,10 @@ import { useEffect, useState } from 'preact/hooks';
 import { formatShortReference } from '../lib/data';
 import {
   loadSurah,
+  quranJuz,
   quranSurahs,
+  readLastPosition,
+  saveLastPosition,
   quranVerseCount,
   searchQuran,
   type QuranSearchResult,
@@ -157,8 +160,17 @@ function QuranBrowser() {
   const [results, setResults] = useState<QuranSearchResult[]>([]);
   const [searchBusy, setSearchBusy] = useState(false);
   const [searchError, setSearchError] = useState('');
+  const [lastRead, setLastRead] = useState<{ surah: number; ayah: number }>();
+  const [jumpValue, setJumpValue] = useState('');
+
+  useEffect(() => {
+    setLastRead(readLastPosition());
+  }, []);
 
   const navigate = (surah: number, ayah?: number) => {
+    saveLastPosition(surah, ayah ?? 1);
+    setLastRead({ surah, ayah: ayah ?? 1 });
+    setJumpValue('');
     setQuery('');
     setSelectedNumber(surah);
     setTargetAyah(ayah);
@@ -283,6 +295,50 @@ function QuranBrowser() {
                 ))}
               </select>
             </label>
+            <label class="field">
+              <span>Juz (part)</span>
+              <select
+                value=""
+                onChange={(event) => {
+                  const juz = quranJuz[Number(event.currentTarget.value) - 1];
+                  if (juz) navigate(juz.surah, juz.ayah);
+                }}
+              >
+                <option value="" disabled>
+                  Jump to a juz…
+                </option>
+                {quranJuz.map((juz) => (
+                  <option value={juz.number} key={juz.number}>
+                    Juz {juz.number} · {quranSurahs[juz.surah - 1].englishName} {juz.surah}:{juz.ayah}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <form
+              class="quran-jump"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const number = Number(jumpValue);
+                if (Number.isInteger(number) && number >= 1 && number <= summary.numberOfAyahs) {
+                  navigate(selectedNumber, number);
+                }
+              }}
+            >
+              <label class="field">
+                <span>Go to ayah (1–{summary.numberOfAyahs})</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={summary.numberOfAyahs}
+                  value={jumpValue}
+                  onInput={(event) => setJumpValue(event.currentTarget.value)}
+                />
+              </label>
+              <button class="button button--ghost" type="submit">
+                Go
+              </button>
+            </form>
             <div class="quran-reader__navigation">
               <button
                 class="button button--ghost"
@@ -302,6 +358,25 @@ function QuranBrowser() {
               </button>
             </div>
           </div>
+
+          {lastRead &&
+            (lastRead.surah !== selectedNumber || lastRead.ayah !== (targetAyah ?? 1)) && (
+              <div class="continue-card">
+                <span>
+                  <Icon name="bookmark" size={18} duo /> Continue where you left off:{' '}
+                  <strong>
+                    {quranSurahs[lastRead.surah - 1].englishName} {lastRead.surah}:{lastRead.ayah}
+                  </strong>
+                </span>
+                <button
+                  class="button button--secondary"
+                  type="button"
+                  onClick={() => navigate(lastRead.surah, lastRead.ayah)}
+                >
+                  Continue <Icon name="arrow" size={16} />
+                </button>
+              </div>
+            )}
 
           {readerError && (
             <div class="inline-notice">
