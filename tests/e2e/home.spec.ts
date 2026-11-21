@@ -2,6 +2,10 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 test('reads, changes, saves, and shares a reminder', async ({ page }) => {
+  // The owner-reviewed set has exactly two verses, so the "next" one is deterministic.
+  await page.addInitScript(() =>
+    localStorage.setItem('al-hidayah:settings:v1', JSON.stringify({ reminderSource: 'reviewed' })),
+  );
   await page.goto('/?item=q:94:6');
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'full');
   await expect(page.locator('.arabic')).toHaveText('إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا');
@@ -63,4 +67,36 @@ test('has no critical accessibility violations on the home page', async ({ page 
   await page.goto('/?item=q:94:6');
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.filter((violation) => violation.impact === 'critical')).toEqual([]);
+});
+
+test('page hydrates under the strict CSP, so buttons really work', async ({ page }) => {
+  const violations: string[] = [];
+  page.on('console', (message) => {
+    if (/Content Security Policy/i.test(message.text())) violations.push(message.text());
+  });
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
+  expect(violations).toEqual([]);
+});
+
+test('Get New Reminder draws from the whole Qur’an, without repeats in a pass', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('html')).toHaveAttribute('data-hydrated', 'true');
+  const seen = new Set<string>();
+  for (let index = 0; index < 8; index += 1) {
+    const before = await page.locator('.reminder-card .reference').first().innerText();
+    await page.getByRole('button', { name: /Get New Reminder/ }).click();
+    await expect(page.locator('.reminder-card .reference').first()).not.toHaveText(before);
+    seen.add(await page.locator('.reminder-card .reference').first().innerText());
+  }
+  expect(seen.size).toBe(8);
+});
+
+test('Daily reminder shows a verse and seven catch-up days that open that verse', async ({ page }) => {
+  await page.goto('/daily/');
+  await expect(page.locator('.reminder-card .arabic')).not.toHaveText('');
+  const links = page.locator('.previous-days a');
+  await expect(links).toHaveCount(7);
+  await links.first().click();
+  await expect(page).toHaveURL(/\/\?item=q:\d+:\d+$/);
 });
