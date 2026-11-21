@@ -1,0 +1,36 @@
+---
+/**
+ * Mounts the interactive app WITHOUT Astro islands.
+ *
+ * Why: `client:load` islands bootstrap through inline <script> tags, and this site's
+ * Content-Security-Policy is `script-src 'self'` (no inline script, by design: AGENTS.md R-01).
+ * The browser silently blocks those inline scripts, so the page rendered but never hydrated and
+ * every button was dead. Here the markup is rendered statically on the server, and ONE external,
+ * same-origin module hydrates it. Astro bundles the <script> below into /_astro/*.js
+ * (never inlined: vite.build.assetsInlineLimit is 0), so the strict CSP stays untouched.
+ */
+import { App } from './App';
+import type { Route } from '../lib/types';
+
+interface Props {
+  route: Route;
+}
+const { route } = Astro.props;
+---
+
+<div id="app-root" data-route={route}>
+  <App route={route} />
+</div>
+
+<script>
+  import { h, hydrate } from 'preact';
+  import { App } from './App';
+  import type { Route } from '../lib/types';
+
+  const root = document.getElementById('app-root');
+  if (root) {
+    document.documentElement.dataset.hydrated = 'false';
+    hydrate(h(App, { route: (root.dataset.route ?? 'home') as Route }), root);
+    document.documentElement.dataset.hydrated = 'true';
+  }
+</script>
