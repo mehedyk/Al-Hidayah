@@ -393,8 +393,8 @@ select {
 }
 
 .hero {
-  --gold: #f3cf7d;
-  --gold-bright: #f3cf7d;
+  --gold: var(--hero-gold, #f3cf7d);
+  --gold-bright: var(--hero-gold, #f3cf7d);
   position: relative;
   isolation: isolate;
   display: flex;
@@ -402,7 +402,7 @@ select {
   min-height: max(56rem, 100svh);
   overflow: hidden;
   color: #f3ead3;
-  background: #08241d;
+  background: var(--hero-end, #08241d);
 }
 .hero-art,
 .hero-art img,
@@ -427,12 +427,12 @@ select {
   background:
     linear-gradient(
       180deg,
-      rgb(4 23 18 / 65%) 0%,
-      rgb(4 23 18 / 28%) 30%,
-      rgb(4 23 18 / 48%) 62%,
-      #08241d 100%
+      color-mix(in srgb, var(--hero-tint, #041712) 65%, transparent) 0%,
+      color-mix(in srgb, var(--hero-tint, #041712) 28%, transparent) 30%,
+      color-mix(in srgb, var(--hero-tint, #041712) 48%, transparent) 62%,
+      var(--hero-end, #08241d) 100%
     ),
-    linear-gradient(90deg, rgb(4 23 18 / 58%), transparent 58%);
+    linear-gradient(90deg, color-mix(in srgb, var(--hero-tint, #041712) 58%, transparent), transparent 58%);
 }
 .hero-scene {
   z-index: -2;
@@ -2059,10 +2059,10 @@ input[role='switch']:checked::after {
   .hero-scrim {
     background: linear-gradient(
       180deg,
-      rgb(4 23 18 / 52%) 0%,
-      rgb(4 23 18 / 20%) 25%,
-      rgb(4 23 18 / 52%) 53%,
-      #08241d 91%
+      color-mix(in srgb, var(--hero-tint, #041712) 52%, transparent) 0%,
+      color-mix(in srgb, var(--hero-tint, #041712) 20%, transparent) 25%,
+      color-mix(in srgb, var(--hero-tint, #041712) 52%, transparent) 53%,
+      var(--hero-end, #08241d) 91%
     );
   }
   .hero-content {
@@ -3301,4 +3301,329 @@ html::before {
 .reminder-card .arabic[data-length='xlong'] {
   max-height: none;
   overflow: visible;
+}
+
+/* ==========================================================================
+   Hero follows the chosen scene (it used to be hard-wired to the green artwork)
+   ========================================================================== */
+.hero-art::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: var(--wall-image, none) center / cover no-repeat;
+  animation: hero-breathe 24s ease-in-out infinite alternate;
+}
+:root[data-motion='reduced'] .hero-art::after {
+  animation: none;
+}
+:root[data-scene='ink'] {
+  --hero-tint: #06191e;
+  --hero-end: #0a2a31;
+  --hero-gold: #efe3c8;
+}
+:root[data-scene='dawn'] {
+  --hero-tint: #1c141b;
+  --hero-end: #2b2029;
+  --hero-gold: #f8d3b4;
+}
+:root[data-scene='sahara'] {
+  --hero-tint: #1a1008;
+  --hero-end: #2a1b0e;
+  --hero-gold: #f0b45a;
+}
+:root[data-scene='midnight'] {
+  --hero-tint: #060a20;
+  --hero-end: #0b1030;
+  --hero-gold: #c9d4ff;
+}
+
+/* ==========================================================================
+   Bangla mode (Kalpurush), Hadi nudge, recitation dock, calm-sounds mixer, share studio
+   ========================================================================== */
+/* Kalpurush is not bundled (no verified free-licence file could be fetched). Put kalpurush.ttf in
+   public/fonts/ to use it; until then Noto Serif Bengali is the fallback. unicode-range means the
+   file is only requested when Bengali text is on the page. */
+@font-face {
+  font-family: 'Kalpurush';
+  font-display: swap;
+  src:
+    local('Kalpurush'),
+    url('/fonts/kalpurush.ttf') format('truetype');
+  unicode-range: U+0980-09FF, U+200C-200D, U+0964-0965;
+}
+:root {
+  --font-bangla: 'Kalpurush', 'Noto Serif Bengali', serif;
+}
+:root[data-ui-lang='bn'] body,
+:root[data-ui-lang='both'] body,
+:root[data-ui-lang='bn'] button,
+:root[data-ui-lang='both'] button,
+:root[data-ui-lang='bn'] input,
+:root[data-ui-lang='bn'] select {
+  font-family: 'Kalpurush', 'Noto Serif Bengali', var(--font-ui);
+}
+[lang='bn'] {
+  font-family: var(--font-bangla);
+}
+
+.hadi-nudge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem auto 0;
+  font-size: 0.82rem;
+  color: var(--text-quiet);
+}
+.hadi-nudge a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+  color: var(--gold-bright);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hadi-nudge--banner {
+  padding: 0.7rem 1rem;
+  background: var(--gold-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+.hero .hadi-nudge {
+  color: #cfd9d2;
+}
+
+.quran-ayah.is-playing {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold) inset;
+}
+.text-button.is-playing {
+  color: var(--gold-bright);
+}
+
+.audio-dock {
+  position: fixed;
+  inset: auto 1rem 1rem;
+  z-index: 60;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 0.7rem 1rem;
+  color: var(--text);
+  background: var(--bg-glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+.audio-dock__now {
+  display: flex;
+  flex: 1 1 12rem;
+  align-items: center;
+  gap: 0.6rem;
+}
+.audio-dock__now span {
+  display: grid;
+}
+.audio-dock__now small {
+  color: var(--text-quiet);
+}
+.audio-dock__controls,
+.audio-dock__options {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.audio-dock__options select {
+  max-width: 11rem;
+  padding: 0.35rem 0.5rem;
+  color: var(--text);
+  background: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: 0.5rem;
+}
+.audio-dock__auto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+}
+.audio-dock__error {
+  flex-basis: 100%;
+  margin: 0;
+  color: #ff9d8a;
+  font-size: 0.8rem;
+}
+.icon-button--primary {
+  color: #08241d;
+  background: var(--gold);
+}
+
+.sound-mixer {
+  position: fixed;
+  right: 1rem;
+  bottom: 5.2rem;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+.sound-fab {
+  display: grid;
+  width: 3.2rem;
+  height: 3.2rem;
+  place-items: center;
+  color: var(--gold-bright);
+  cursor: pointer;
+  background: var(--bg-glass);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+.sound-fab.is-playing {
+  color: #08241d;
+  background: var(--gold);
+}
+.sound-panel {
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: min(34rem, 70svh);
+  padding: 1rem;
+  overflow-y: auto;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow);
+}
+.sound-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sound-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 1.15rem;
+}
+.sound-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.8rem 0;
+}
+.chip {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.75rem;
+  color: var(--text);
+  cursor: pointer;
+  background: var(--gold-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+}
+.sound-layers {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0;
+  margin: 0 0 0.8rem;
+  list-style: none;
+}
+.sound-layers label,
+.sound-master,
+.sound-sleep {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+}
+.sound-layers__name {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.sound-layers__name small {
+  margin-left: auto;
+  color: var(--text-quiet);
+}
+.sound-layers input[type='range'],
+.sound-master input {
+  width: 100%;
+  accent-color: var(--gold);
+}
+.sound-sleep {
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  margin: 0.8rem 0;
+}
+.sound-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.sound-credit {
+  display: block;
+  margin-top: 0.7rem;
+  color: var(--text-quiet);
+}
+
+.share-canvas {
+  width: auto;
+  max-width: 100%;
+  height: min(62svh, 46rem);
+  object-fit: contain;
+  border-radius: 0.6rem;
+  box-shadow: var(--shadow);
+}
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.6rem, 1fr));
+  gap: 0.5rem;
+}
+.template-chip {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: center;
+  padding: 0.4rem;
+  font-size: 0.7rem;
+  color: var(--text);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--line-soft);
+  border-radius: 0.6rem;
+}
+.template-chip.selected {
+  border-color: var(--gold);
+  background: var(--gold-soft);
+}
+.template-chip__swatch {
+  display: grid;
+  width: 100%;
+  height: 2.6rem;
+  place-items: center;
+  color: #fff;
+  border-radius: 0.4rem;
+}
+.share-targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+@media (max-width: 767px) {
+  .audio-dock {
+    bottom: 5.4rem;
+  }
+  .sound-mixer {
+    bottom: 9.5rem;
+  }
+  .share-canvas {
+    height: min(40svh, 24rem);
+  }
 }
