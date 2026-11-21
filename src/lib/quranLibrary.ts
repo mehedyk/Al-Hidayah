@@ -25,6 +25,32 @@ export interface QuranSearchResult {
 
 export const quranSurahs: QuranSurahSummary[] = generated.surahs;
 export const quranVerseCount = generated.verseCount;
+/** The 30 juz, each with the surah and ayah where it begins (from the frozen source's own data). */
+export const quranJuz: Array<{ number: number; surah: number; ayah: number }> = generated.juz;
+
+const LAST_READ_KEY = 'al-hidayah:last-read:v1';
+
+export function readLastPosition(): { surah: number; ayah: number } | undefined {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(LAST_READ_KEY) ?? 'null');
+    if (!value || typeof value !== 'object') return undefined;
+    const { surah, ayah } = value as Record<string, unknown>;
+    if (typeof surah !== 'number' || typeof ayah !== 'number') return undefined;
+    const summary = quranSurahs[surah - 1];
+    if (!summary || ayah < 1 || ayah > summary.numberOfAyahs) return undefined;
+    return { surah, ayah };
+  } catch {
+    return undefined;
+  }
+}
+
+export function saveLastPosition(surah: number, ayah: number): void {
+  try {
+    localStorage.setItem(LAST_READ_KEY, JSON.stringify({ surah, ayah }));
+  } catch {
+    // Storage can be blocked; reading still works, we just cannot remember the place.
+  }
+}
 export const allQuranIds = new Set(
   quranSurahs.flatMap((surah) =>
     Array.from({ length: surah.numberOfAyahs }, (_, index) => `q:${surah.number}:${index + 1}`),
