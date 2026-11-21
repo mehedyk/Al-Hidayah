@@ -1,4 +1,4 @@
-const CACHE = 'al-hidayah-v1';
+const CACHE = 'al-hidayah-v2';
 const SHELL = [
   '/',
   '/quran/',
