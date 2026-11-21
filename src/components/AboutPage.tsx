@@ -1,4 +1,5 @@
 import { reportUrl } from '../lib/app-context';
+import { scenes } from '../lib/scenes';
 import { Icon, Ornament } from './Icon';
 
 export function AboutPage() {
@@ -17,7 +18,7 @@ export function AboutPage() {
           scholarship.
         </p>
       </section>
-      <section class="source-section">
+      <section class="source-section" id="sources">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Sources and integrity</p>
@@ -105,6 +106,32 @@ export function AboutPage() {
           artwork was AI-generated for this project as visual design only: it contains no writing,
           no scripture, and no depiction of the Prophets, Companions, or the Prophet’s family. All
           religious text comes from the verified datasets above.
+        </p>
+      </section>
+      <section class="artwork-credit" id="credits">
+        <p class="eyebrow">Photo and media credits</p>
+        <h2>Scene wallpapers and the footer film.</h2>
+        <p>
+          The scene themes use free photographs from Pexels, shared under the{' '}
+          <a href="https://www.pexels.com/license/" target="_blank" rel="noreferrer">
+            Pexels License
+          </a>
+          . None shows people or text. Thank you to the photographers:
+        </p>
+        <ul class="credit-list">
+          {scenes.map((scene) => (
+            <li>
+              <a href={scene.page} target="_blank" rel="noreferrer">
+                {scene.title}
+              </a>{' '}
+              — {scene.photographer}
+            </li>
+          ))}
+        </ul>
+        <p>
+          The looping ink-landscape film in the footer and on the 404 page was supplied by the
+          project owner. It is muted and silent, and it is replaced by a still image when you turn on
+          Reduce motion.
         </p>
       </section>
       <section class="report-panel">
