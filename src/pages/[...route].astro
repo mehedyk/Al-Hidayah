@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { App } from '../components/App';
+import AppRoot from '../components/AppRoot.astro';
 import type { Route } from '../lib/types';
 
 export function getStaticPaths() {
@@ -27,5 +27,5 @@ const titles: Record<Exclude<Route, 'home'>, string> = {
   description="Al-Hidayah: verified reminders in Arabic, English, and Bangla, private on your device."
   route={route}
 >
-  <App client:load route={route} />
+  <AppRoot route={route} />
 </BaseLayout>
