@@ -24,6 +24,12 @@ describe('settings sanitiser', () => {
     expect(result.showEnglish).toBe(false);
   });
 
+  it('defaults reminders to the whole Qur’an and only accepts the two known sources', () => {
+    expect(defaultSettings.reminderSource).toBe('quran');
+    expect(sanitizeSettings({ reminderSource: 'reviewed' }).reminderSource).toBe('reviewed');
+    expect(sanitizeSettings({ reminderSource: 'everything' }).reminderSource).toBe('quran');
+  });
+
   it('rejects unknown scenes', () => {
     expect(sanitizeSettings({ scene: '<script>' }).scene).toBe('emerald');
     expect(isSceneId('dawn')).toBe(true);
