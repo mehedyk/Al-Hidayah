@@ -7,6 +7,9 @@ export const defaultSettings: Settings = {
   theme: 'dark',
   scene: defaultSceneId,
   reminderSource: 'quran',
+  uiLanguage: 'en',
+  reciter: 'Alafasy_128kbps',
+  autoAdvance: true,
   showEnglish: true,
   showBangla: true,
   textSize: 'default',
@@ -29,6 +32,13 @@ export function sanitizeSettings(value: unknown): Settings {
     theme: themes.includes(saved.theme as Theme) ? (saved.theme as Theme) : defaultSettings.theme,
     scene: isSceneId(saved.scene) ? saved.scene : defaultSettings.scene,
     reminderSource: saved.reminderSource === 'reviewed' ? 'reviewed' : 'quran',
+    uiLanguage:
+      saved.uiLanguage === 'bn' || saved.uiLanguage === 'both' ? saved.uiLanguage : 'en',
+    reciter:
+      typeof saved.reciter === 'string' && /^[A-Za-z0-9_.-]{3,60}$/.test(saved.reciter)
+        ? saved.reciter
+        : defaultSettings.reciter,
+    autoAdvance: saved.autoAdvance !== false,
     textSize: textSizes.includes(saved.textSize as TextSize)
       ? (saved.textSize as TextSize)
       : defaultSettings.textSize,
