@@ -2,6 +2,8 @@ export interface RawAyah {
   number: number;
   text: string;
   numberInSurah: number;
+  /** Structural metadata only (1-30). Present in the Arabic source edition. */
+  juz?: number;
 }
 
 export interface RawSurah {
