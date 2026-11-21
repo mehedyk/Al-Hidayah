@@ -18,6 +18,9 @@ import { AboutPage } from './AboutPage';
 import { SettingsPage } from './SettingsPage';
 import { ShareStudio } from './ShareStudio';
 import { SiteFooter } from './SiteFooter';
+import { AudioDock } from './Audio';
+import { SoundMixer } from './SoundMixer';
+import { translate } from '../lib/i18n';
 
 const pageCopy: Record<
   Exclude<Route, 'home'>,
@@ -112,6 +115,8 @@ export function App({ route }: { route: Route }) {
       document.documentElement.dataset.theme = dark ? 'dark' : 'light';
       document.documentElement.dataset.textSize = settings.textSize;
       document.documentElement.dataset.scene = settings.scene;
+      document.documentElement.dataset.uiLang = settings.uiLanguage;
+      document.documentElement.lang = settings.uiLanguage === 'bn' ? 'bn' : 'en';
       const width = window.innerWidth <= 900 ? 1080 : 1920;
       document.documentElement.style.setProperty(
         '--wall-image',
@@ -232,7 +237,7 @@ export function App({ route }: { route: Route }) {
             <main class="internal-main shell">
               <header class="page-title">
                 <p class="eyebrow">{pageCopy[route].eyebrow}</p>
-                <h1>{pageCopy[route].title}</h1>
+                <h1>{translate(`title.${route}` as const, settings.uiLanguage)}</h1>
                 <p>{pageCopy[route].description}</p>
               </header>
               {page}
@@ -241,6 +246,8 @@ export function App({ route }: { route: Route }) {
           </div>
         )}
       </div>
+      <AudioDock />
+      <SoundMixer />
       <MobileNavigation route={route} />
       {shareItem && <ShareStudio item={shareItem} onClose={() => setShareItem(null)} />}
       <div class={`toast ${toast ? 'toast--visible' : ''}`} role="status" aria-live="polite">
