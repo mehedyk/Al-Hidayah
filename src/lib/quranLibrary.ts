@@ -57,6 +57,9 @@ export const allQuranIds = new Set(
   ),
 );
 
+/** Every ayah id in reading order (surah 1 to 114, ayah 1 to n). */
+export const quranIdList: string[] = [...allQuranIds];
+
 const surahCache = new Map<number, Promise<QuranShard>>();
 let searchCache: Promise<QuranSearchResult[]> | undefined;
 
