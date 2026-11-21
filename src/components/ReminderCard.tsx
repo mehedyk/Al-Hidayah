@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef } from 'preact/hooks';
 import { formatReference, formatShortReference } from '../lib/data';
 import { useApp } from '../lib/app-context';
 import type { Item } from '../lib/types';
+import { useT } from '../lib/useT';
+import { HadiNudge } from './HadiNudge';
 import { Icon, Ornament } from './Icon';
 
 export function ReminderCard({
@@ -9,7 +11,7 @@ export function ReminderCard({
   onNew,
   compact = false,
   busy = false,
-  title = 'Today’s reminder',
+  title,
 }: {
   item: Item;
   onNew?: () => void;
@@ -18,6 +20,7 @@ export function ReminderCard({
   title?: string;
 }) {
   const { settings, favoriteIds, toggleFavorite, openShare } = useApp();
+  const t = useT();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const saved = favoriteIds.has(item.id);
   const words = item.ar.split(' ');
@@ -46,7 +49,7 @@ export function ReminderCard({
       {!compact && (
         <>
           <Ornament />
-          <p class="eyebrow">{title}</p>
+          <p class="eyebrow">{title ?? t('card.today')}</p>
         </>
       )}
       <h2 id={`reminder-${item.id}`} ref={headingRef} tabIndex={-1} class="sr-only">
@@ -80,11 +83,11 @@ export function ReminderCard({
           <div class="context-links">
             {item.ref.kind === 'quran' && (
               <a class="context-link" href={`/quran/?surah=${item.ref.surah}&ayah=${item.ref.ayah}`}>
-                Open in the Qur’an reader <Icon name="book" size={15} />
+                {t('card.reader')} <Icon name="book" size={15} />
               </a>
             )}
             <a class="context-link" href={item.contextUrl} target="_blank" rel="noreferrer">
-              Read in context <Icon name="external" size={15} />
+              {t('card.context')} <Icon name="external" size={15} />
             </a>
           </div>
           <div class="reminder-actions">
@@ -100,7 +103,7 @@ export function ReminderCard({
                 }}
               >
                 <Icon name="shuffle" />
-                {busy ? 'Loading…' : 'Get New Reminder'}
+                {busy ? t('card.loading') : t('card.new')}
               </button>
             )}
             <button
@@ -110,13 +113,14 @@ export function ReminderCard({
               aria-pressed={saved}
             >
               <Icon name="heart" filled={saved} />
-              {saved ? 'Saved' : 'Save'}
+              {saved ? t('card.saved') : t('card.save')}
             </button>
             <button class="button button--ghost" type="button" onClick={() => openShare(item)}>
               <Icon name="share" />
-              Share
+              {t('card.share')}
             </button>
           </div>
+          {item.ref.kind === 'quran' && <HadiNudge />}
         </>
       )}
       <span class="sr-only" aria-live="polite">
