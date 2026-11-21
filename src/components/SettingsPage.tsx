@@ -49,6 +49,10 @@ export function SettingsPage() {
                   height="260"
                   loading="lazy"
                   decoding="async"
+                  onError={(event) => {
+                    // If the photo host is unreachable, show the plain card instead of a broken icon.
+                    event.currentTarget.style.visibility = 'hidden';
+                  }}
                 />
                 <span class="scene-card__text">
                   <strong>{scene.name}</strong>
@@ -180,6 +184,20 @@ export function SettingsPage() {
             <p>Optional notifications while Al-Hidayah is open.</p>
           </div>
         </div>
+        <label class="field">
+          <span>Where reminders come from</span>
+          <select
+            value={settings.reminderSource}
+            onChange={(event) =>
+              updateSettings({
+                reminderSource: event.currentTarget.value as typeof settings.reminderSource,
+              })
+            }
+          >
+            <option value="quran">The entire Qur’an (6,236 verses)</option>
+            <option value="reviewed">Only the owner-reviewed set</option>
+          </select>
+        </label>
         <label class="field">
           <span>Preferred time</span>
           <input
