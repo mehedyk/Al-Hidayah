@@ -95,3 +95,22 @@ describe('shipped reminder data', () => {
     }
   });
 });
+
+describe('juz navigation index', () => {
+  it('lists all 30 juz in order, each pointing at a real ayah', () => {
+    expect(quranIndex.juz).toHaveLength(30);
+    let previous = 0;
+    quranIndex.juz.forEach((juz, index) => {
+      expect(juz.number).toBe(index + 1);
+      const summary = quranIndex.surahs[juz.surah - 1];
+      expect(summary).toBeDefined();
+      expect(juz.ayah).toBeGreaterThanOrEqual(1);
+      expect(juz.ayah).toBeLessThanOrEqual(summary.numberOfAyahs);
+      const position = juz.surah * 1000 + juz.ayah;
+      expect(position).toBeGreaterThan(previous);
+      previous = position;
+    });
+    expect(quranIndex.juz[1]).toMatchObject({ surah: 2, ayah: 142 });
+    expect(quranIndex.juz[29]).toMatchObject({ surah: 78, ayah: 1 });
+  });
+});
