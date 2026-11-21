@@ -4,6 +4,7 @@ import { loadSettings, saveSettings } from '../lib/settings';
 import { getItem, items, formatReference } from '../lib/data';
 import { dailyItemId, localDateKey } from '../lib/daily/dailyItem';
 import { listFavorites, removeFavorite, saveFavorite } from '../lib/storage/favorites';
+import { getScene, wallpaperUrl } from '../lib/scenes';
 import type { Item, Route, Settings } from '../lib/types';
 import { Header, MobileNavigation } from './Header';
 import { HomePage } from './HomePage';
@@ -106,6 +107,12 @@ export function App({ route }: { route: Route }) {
       const dark = settings.theme === 'dark' || (settings.theme === 'system' && systemDark.matches);
       document.documentElement.dataset.theme = dark ? 'dark' : 'light';
       document.documentElement.dataset.textSize = settings.textSize;
+      document.documentElement.dataset.scene = settings.scene;
+      const width = window.innerWidth <= 900 ? 1080 : 1920;
+      document.documentElement.style.setProperty(
+        '--wall-image',
+        `url("${wallpaperUrl(getScene(settings.scene), width)}")`,
+      );
       document.documentElement.dataset.motion = settings.reducedMotion ? 'reduced' : 'full';
       document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
       if (settingsReady) saveSettings(settings);
