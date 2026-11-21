@@ -13,6 +13,10 @@ import {
 } from '../lib/quranLibrary';
 import { useApp } from '../lib/app-context';
 import type { Item } from '../lib/types';
+import { useT } from '../lib/useT';
+import { recitation } from '../lib/audio/recitation';
+import { HadiNudge } from './HadiNudge';
+import { VerseAudioButton, useRecitation } from './Audio';
 import { Icon, Ornament } from './Icon';
 
 export function ReviewGate({ kind }: { kind: 'hadith' | 'categories' }) {
@@ -45,12 +49,18 @@ export function ReviewGate({ kind }: { kind: 'hadith' | 'categories' }) {
 
 function QuranVerse({ item }: { item: Item }) {
   const { settings, favoriteIds, toggleFavorite, openShare } = useApp();
+  const t = useT();
+  const playback = useRecitation();
   const saved = favoriteIds.has(item.id);
   if (item.ref.kind !== 'quran') return null;
   const ayah = item.ref.ayah;
+  const current =
+    playback.status !== 'idle' &&
+    playback.position?.surah === item.ref.surah &&
+    playback.position.ayah === ayah;
 
   return (
-    <article class="quran-ayah" id={`ayah-${ayah}`} aria-labelledby={`ayah-${ayah}-reference`}>
+    <article class={`quran-ayah ${current ? 'is-playing' : ''}`} id={`ayah-${ayah}`} aria-labelledby={`ayah-${ayah}-reference`}>
       <div class="quran-ayah__number" aria-hidden="true">
         {ayah}
       </div>
@@ -79,16 +89,17 @@ function QuranVerse({ item }: { item: Item }) {
           >
             Context <Icon name="arrow" size={15} />
           </a>
+          <VerseAudioButton surah={item.ref.surah} ayah={ayah} />
           <button
             class={`text-button ${saved ? 'is-saved' : ''}`}
             type="button"
             onClick={() => toggleFavorite(item)}
             aria-pressed={saved}
           >
-            <Icon name="heart" size={17} filled={saved} /> {saved ? 'Saved' : 'Save'}
+            <Icon name="heart" size={17} filled={saved} /> {saved ? t('card.saved') : t('card.save')}
           </button>
           <button class="text-button" type="button" onClick={() => openShare(item)}>
-            <Icon name="share" size={17} /> Share
+            <Icon name="share" size={17} /> {t('card.share')}
           </button>
         </div>
       </div>
@@ -152,6 +163,8 @@ function SearchResults({
 }
 
 function QuranBrowser() {
+  const t = useT();
+  const playback = useRecitation();
   const [query, setQuery] = useState('');
   const [selectedNumber, setSelectedNumber] = useState(1);
   const [targetAyah, setTargetAyah] = useState<number>();
@@ -254,6 +267,18 @@ function QuranBrowser() {
     };
   }, [query]);
 
+  const playingSurah = playback.status === 'idle' ? undefined : playback.position?.surah;
+  const playingAyah = playback.status === 'idle' ? undefined : playback.position?.ayah;
+  useEffect(() => {
+    if (!playingSurah || !playingAyah) return;
+    if (playingSurah !== selectedNumber) {
+      navigate(playingSurah, playingAyah);
+      return;
+    }
+    document.getElementById(`ayah-${playingAyah}`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playingSurah, playingAyah]);
+
   const summary = quranSurahs[selectedNumber - 1];
   return (
     <div class="browser-page quran-browser">
@@ -265,7 +290,7 @@ function QuranBrowser() {
             type="search"
             value={query}
             onInput={(event) => setQuery(event.currentTarget.value)}
-            placeholder="Search all 6,236 verses…"
+            placeholder={t('reader.search')}
           />
         </label>
         <span>114 surahs · {quranVerseCount.toLocaleString()} verses</span>
@@ -283,7 +308,7 @@ function QuranBrowser() {
         <div class="quran-reader">
           <div class="quran-reader__toolbar">
             <label class="field">
-              <span>Choose a surah</span>
+              <span>{t('reader.surah')}</span>
               <select
                 value={selectedNumber}
                 onChange={(event) => navigate(Number(event.currentTarget.value))}
@@ -296,7 +321,7 @@ function QuranBrowser() {
               </select>
             </label>
             <label class="field">
-              <span>Juz (part)</span>
+              <span>{t('reader.juz')}</span>
               <select
                 value=""
                 onChange={(event) => {
@@ -336,7 +361,7 @@ function QuranBrowser() {
                 />
               </label>
               <button class="button button--ghost" type="submit">
-                Go
+                {t('reader.go')}
               </button>
             </form>
             <div class="quran-reader__navigation">
@@ -346,7 +371,7 @@ function QuranBrowser() {
                 disabled={selectedNumber === 1}
                 onClick={() => navigate(selectedNumber - 1)}
               >
-                Previous
+                {t('reader.prev')}
               </button>
               <button
                 class="button button--ghost"
@@ -354,10 +379,11 @@ function QuranBrowser() {
                 disabled={selectedNumber === 114}
                 onClick={() => navigate(selectedNumber + 1)}
               >
-                Next
+                {t('reader.next')}
               </button>
             </div>
           </div>
+          <HadiNudge variant="banner" />
 
           {lastRead &&
             (lastRead.surah !== selectedNumber || lastRead.ayah !== (targetAyah ?? 1)) && (
@@ -373,7 +399,7 @@ function QuranBrowser() {
                   type="button"
                   onClick={() => navigate(lastRead.surah, lastRead.ayah)}
                 >
-                  Continue <Icon name="arrow" size={16} />
+                  {t('reader.continue')} <Icon name="arrow" size={16} />
                 </button>
               </div>
             )}
@@ -406,6 +432,13 @@ function QuranBrowser() {
                 <p class="quran-surah-heading__arabic" lang="ar" dir="rtl">
                   {shard.name}
                 </p>
+                <button
+                  class="button button--primary"
+                  type="button"
+                  onClick={() => void recitation.play({ surah: shard.number, ayah: 1 })}
+                >
+                  <Icon name="headphones" /> {t('reader.playSurah')}
+                </button>
               </header>
               <div class="quran-ayah-list">
                 {shard.items.map((item) => (
