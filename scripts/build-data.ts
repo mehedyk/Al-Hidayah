@@ -59,7 +59,20 @@ const surahs = arabic.data.surahs.map((surah) => ({
   englishNameTranslation: surah.englishNameTranslation,
   numberOfAyahs: surah.ayahs.length,
 }));
-const quranIndex = { version: 1, verseCount: 6236, surahs };
+
+// Juz (1-30) start positions come straight from the frozen source's own `juz` field. This is
+// structural navigation metadata only; no scripture text is read, altered or generated here.
+const juzStarts: Array<{ number: number; surah: number; ayah: number }> = [];
+for (const surah of arabic.data.surahs) {
+  for (const ayah of surah.ayahs) {
+    if (typeof ayah.juz !== 'number') throw new Error(`${surah.number}:${ayah.numberInSurah}: missing juz.`);
+    if (ayah.juz === juzStarts.length + 1) {
+      juzStarts.push({ number: ayah.juz, surah: surah.number, ayah: ayah.numberInSurah });
+    }
+  }
+}
+if (juzStarts.length !== 30) throw new Error(`Expected 30 juz, found ${juzStarts.length}.`);
+const quranIndex = { version: 2, verseCount: 6236, surahs, juz: juzStarts };
 await Promise.all([
   mkdir('public/data/quran/surahs', { recursive: true }),
   writeFile('src/data/generated/quran-index.json', `${JSON.stringify(quranIndex, null, 2)}\n`),
