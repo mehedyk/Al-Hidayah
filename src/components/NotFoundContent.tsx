@@ -6,6 +6,19 @@ import { loadSettings } from '../lib/settings';
 import type { UiLanguage } from '../lib/types';
 import { Icon, LogoMark } from './Icon';
 
+/** Every page of the site, so a lost visitor can reach any of them from here. */
+const allPages = [
+  { href: '/', label: 'Home' },
+  { href: '/quran/', label: 'From the Qur’an' },
+  { href: '/hadith/', label: 'From the Hadith' },
+  { href: '/categories/', label: 'For a Better Life' },
+  { href: '/daily/', label: 'Daily Reminder' },
+  { href: '/prayer/', label: 'Prayer Times' },
+  { href: '/favorites/', label: 'Favorites' },
+  { href: '/about/', label: 'About' },
+  { href: '/settings/', label: 'Settings' },
+];
+
 type AmbienceState = 'checking' | 'playing' | 'paused' | 'blocked' | 'unavailable';
 
 /**
@@ -72,6 +85,16 @@ export function NotFoundContent() {
           {t('nf.quran')}
         </a>
       </div>
+      <nav class="not-found__links" aria-label={t('nf.links')}>
+        <p class="not-found__links-title">{t('nf.links')}</p>
+        <ul>
+          {allPages.map((page) => (
+            <li>
+              <a href={page.href}>{page.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
       {state !== 'unavailable' && state !== 'checking' && (
         <div class="not-found__ambience">
           <button class="button button--ghost" type="button" onClick={toggle} aria-pressed={state === 'playing'}>
