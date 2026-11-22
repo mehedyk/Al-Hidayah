@@ -17,8 +17,8 @@
   --cream: #f6eedb;
   --white: #fffdf7;
   --shadow: 0 24px 80px rgb(0 0 0 / 22%);
-  --font-ui: 'Inter', sans-serif;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-ui: 'Inter', 'Kalpurush', sans-serif;
+  --font-serif: 'Cormorant Garamond', 'Kalpurush', Georgia, serif;
   --font-arabic: 'Amiri Quran', 'Amiri', serif;
   --font-arabic-prose: 'Amiri', serif;
   --font-bangla: 'Noto Serif Bengali', serif;
@@ -3340,9 +3340,8 @@ html::before {
 /* ==========================================================================
    Bangla mode (Kalpurush), Hadi nudge, recitation dock, calm-sounds mixer, share studio
    ========================================================================== */
-/* Kalpurush is not bundled (no verified free-licence file could be fetched). Put kalpurush.ttf in
-   public/fonts/ to use it; until then Noto Serif Bengali is the fallback. unicode-range means the
-   file is only requested when Bengali text is on the page. */
+/* Kalpurush (Akkhor52): used unmodified, for all Bangla text in the interface. unicode-range means
+   the file is only requested when Bengali text is on the page. Share cards keep Noto Serif Bengali. */
 @font-face {
   font-family: 'Kalpurush';
   font-display: swap;
@@ -3626,4 +3625,261 @@ html::before {
   .share-canvas {
     height: min(40svh, 24rem);
   }
+}
+
+/* Scenes from the supplied photographs */
+:root[data-scene='storm']:not([data-theme='light']) {
+  --bg: #101d27;
+  --bg-deep: #0a141b;
+  --bg-raised: #182b38;
+  --bg-soft: #213a4a;
+  --bg-glass: rgb(16 29 39 / 72%);
+  --gold: #9cc4d9;
+  --gold-bright: #cfe6f2;
+  --gold-soft: rgb(156 196 217 / 14%);
+  --line: rgb(156 196 217 / 26%);
+  --line-soft: rgb(156 196 217 / 13%);
+}
+:root[data-scene='storm'][data-theme='light'] {
+  --bg: #e4ecf1;
+  --bg-deep: #d2dee6;
+  --bg-raised: #f5f9fb;
+  --bg-soft: #dbe6ed;
+  --bg-glass: rgb(245 249 251 / 78%);
+  --gold: #2c5f7a;
+  --gold-bright: #1f4a61;
+  --gold-ink: #f5f9fb;
+  --gold-soft: rgb(44 95 122 / 11%);
+  --focus: #2c5f7a;
+}
+:root[data-scene='storm'] {
+  --hero-tint: #0a141b;
+  --hero-end: #101d27;
+  --hero-gold: #cfe6f2;
+}
+:root[data-scene='lagoon']:not([data-theme='light']) {
+  --bg: #0b2438;
+  --bg-deep: #07182a;
+  --bg-raised: #12344f;
+  --bg-soft: #1a4766;
+  --bg-glass: rgb(11 36 56 / 72%);
+  --gold: #7fd4e6;
+  --gold-bright: #b7ecf6;
+  --gold-soft: rgb(127 212 230 / 14%);
+  --line: rgb(127 212 230 / 26%);
+  --line-soft: rgb(127 212 230 / 13%);
+}
+:root[data-scene='lagoon'][data-theme='light'] {
+  --bg: #e3f1f6;
+  --bg-deep: #cfe5ee;
+  --bg-raised: #f6fbfd;
+  --bg-soft: #d9ebf2;
+  --bg-glass: rgb(246 251 253 / 78%);
+  --gold: #0e6f8a;
+  --gold-bright: #0a566c;
+  --gold-ink: #f6fbfd;
+  --gold-soft: rgb(14 111 138 / 11%);
+  --focus: #0e6f8a;
+}
+:root[data-scene='lagoon'] {
+  --hero-tint: #07182a;
+  --hero-end: #0b2438;
+  --hero-gold: #b7ecf6;
+}
+:root[data-scene='palm']:not([data-theme='light']) {
+  --bg: #14261a;
+  --bg-deep: #0c180f;
+  --bg-raised: #1d3624;
+  --bg-soft: #28492f;
+  --bg-glass: rgb(20 38 26 / 72%);
+  --gold: #c4d98a;
+  --gold-bright: #e0eeb4;
+  --gold-soft: rgb(196 217 138 / 14%);
+  --line: rgb(196 217 138 / 26%);
+  --line-soft: rgb(196 217 138 / 13%);
+}
+:root[data-scene='palm'][data-theme='light'] {
+  --bg: #eaf0e1;
+  --bg-deep: #d8e2cb;
+  --bg-raised: #f8fbf3;
+  --bg-soft: #dfe8d3;
+  --bg-glass: rgb(248 251 243 / 78%);
+  --gold: #4d6b1f;
+  --gold-bright: #3b5316;
+  --gold-ink: #f8fbf3;
+  --gold-soft: rgb(77 107 31 / 11%);
+  --focus: #4d6b1f;
+}
+:root[data-scene='palm'] {
+  --hero-tint: #0c180f;
+  --hero-end: #14261a;
+  --hero-gold: #e0eeb4;
+}
+:root[data-scene='ember']:not([data-theme='light']) {
+  --bg: #2d1710;
+  --bg-deep: #1d0e09;
+  --bg-raised: #402016;
+  --bg-soft: #52291c;
+  --bg-glass: rgb(45 23 16 / 72%);
+  --gold: #ff9a62;
+  --gold-bright: #ffc29c;
+  --gold-soft: rgb(255 154 98 / 14%);
+  --line: rgb(255 154 98 / 26%);
+  --line-soft: rgb(255 154 98 / 13%);
+}
+:root[data-scene='ember'][data-theme='light'] {
+  --bg: #f8e4da;
+  --bg-deep: #efcdbd;
+  --bg-raised: #fff6f1;
+  --bg-soft: #f3d7c8;
+  --bg-glass: rgb(255 246 241 / 78%);
+  --gold: #b3441a;
+  --gold-bright: #8c3412;
+  --gold-ink: #fff6f1;
+  --gold-soft: rgb(179 68 26 / 11%);
+  --focus: #b3441a;
+}
+:root[data-scene='ember'] {
+  --hero-tint: #1d0e09;
+  --hero-end: #2d1710;
+  --hero-gold: #ffc29c;
+}
+:root[data-scene='dew']:not([data-theme='light']) {
+  --bg: #1a2412;
+  --bg-deep: #10170b;
+  --bg-raised: #26331a;
+  --bg-soft: #324424;
+  --bg-glass: rgb(26 36 18 / 72%);
+  --gold: #d5c46a;
+  --gold-bright: #ece09b;
+  --gold-soft: rgb(213 196 106 / 14%);
+  --line: rgb(213 196 106 / 26%);
+  --line-soft: rgb(213 196 106 / 13%);
+}
+:root[data-scene='dew'][data-theme='light'] {
+  --bg: #eef0dc;
+  --bg-deep: #dfe3c4;
+  --bg-raised: #fafbee;
+  --bg-soft: #e5e8cf;
+  --bg-glass: rgb(250 251 238 / 78%);
+  --gold: #6b6a12;
+  --gold-bright: #53520c;
+  --gold-ink: #fafbee;
+  --gold-soft: rgb(107 106 18 / 11%);
+  --focus: #6b6a12;
+}
+:root[data-scene='dew'] {
+  --hero-tint: #10170b;
+  --hero-end: #1a2412;
+  --hero-gold: #ece09b;
+}
+
+/* ==========================================================================
+   Language button, developer note, 404 ambience, resume chip
+   ========================================================================== */
+.lang-toggle {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  height: 2.9rem;
+  padding: 0 0.85rem;
+  margin-right: 0.5rem;
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--gold-soft);
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+}
+.lang-toggle:hover {
+  border-color: var(--gold);
+}
+@media (max-width: 767px) {
+  .lang-toggle span {
+    display: none;
+  }
+  .lang-toggle {
+    width: 2.9rem;
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+.developer-note {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.4rem 1.5rem;
+  margin: 2rem 0;
+  color: var(--text);
+  background: var(--bg-glass);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius);
+}
+.developer-note h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.35rem;
+}
+.developer-note p {
+  max-width: 62ch;
+  margin: 0 0 1rem;
+  color: var(--text-quiet);
+  line-height: 1.7;
+}
+.footer-developer {
+  padding: 0.9rem 0 0;
+  border-top: 1px solid rgb(255 255 255 / 12%);
+}
+.developer-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+  font-size: 0.82rem;
+}
+.developer-line a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.not-found__ambience {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+  max-width: 34rem;
+  padding: 0.9rem 1.1rem;
+  margin-top: 0.6rem;
+  background: rgb(255 255 255 / 38%);
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: var(--radius);
+  backdrop-filter: blur(6px);
+}
+.not-found__ambience p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+.not-found__mixnote {
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+.chip--resume {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  background: var(--gold);
+  color: var(--gold-ink, #08241d);
+  font-weight: 600;
+}
+.sound-credit ul {
+  padding-left: 1.1rem;
+  font-size: 0.75rem;
+}
+.not-found .button--ghost {
+  color: var(--ink);
+  background: rgb(255 255 255 / 55%);
+  border: 1px solid var(--ink);
 }
