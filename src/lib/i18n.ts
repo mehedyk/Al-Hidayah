@@ -48,6 +48,7 @@ const dictionary = {
   'nf.body': ['The reminder you are looking for may have moved.', 'আপনি যে স্মরণিকা খুঁজছেন তা হয়তো সরে গেছে।'],
   'nf.home': ['Return home', 'হোমে ফিরুন'],
   'nf.quran': ['Browse the Qur’an', 'কুরআন দেখুন'],
+  'nf.links': ['Or go straight to', 'অথবা সরাসরি যান'],
   'nf.ambience': [
     'Nature ambience: birds, a light breeze and flowing water.',
     'প্রকৃতির শব্দ: পাখির ডাক, হালকা বাতাস ও বয়ে চলা জল।',
@@ -67,6 +68,7 @@ const dictionary = {
     'The developer is open to work: full-time, internship or paid projects.',
     'ডেভেলপার কাজের জন্য প্রস্তুত: পূর্ণকালীন, ইন্টার্নশিপ বা বেতনভুক্ত প্রজেক্ট।',
   ],
+  'dev.idea': ['Idea and vision by', 'ধারণা ও ভিশন:'],
   'dev.cta': ['Get in touch on GitHub', 'GitHub-এ যোগাযোগ করুন'],
   'lang.button': ['Language', 'ভাষা'],
   'settings.language': ['Interface language', 'ইন্টারফেসের ভাষা'],
