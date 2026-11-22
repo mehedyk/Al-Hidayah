@@ -1,4 +1,4 @@
-import { DEVELOPER_URL } from '../lib/links';
+import { DEVELOPER_URL, IDEA_CREDIT_NAME, IDEA_CREDIT_URL } from '../lib/links';
 import { useOptionalT } from '../lib/useT';
 import { Icon } from './Icon';
 
@@ -13,6 +13,12 @@ export function DeveloperNote({ variant = 'card' }: { variant?: 'card' | 'line' 
         <a href={DEVELOPER_URL} target="_blank" rel="noopener noreferrer">
           {t('dev.cta')}
         </a>
+        <span class="developer-line__idea">
+          {t('dev.idea')}{' '}
+          <a href={IDEA_CREDIT_URL} target="_blank" rel="noopener noreferrer">
+            {IDEA_CREDIT_NAME}
+          </a>
+        </span>
       </p>
     );
   }
@@ -25,6 +31,13 @@ export function DeveloperNote({ variant = 'card' }: { variant?: 'card' | 'line' 
         <a class="button button--secondary" href={DEVELOPER_URL} target="_blank" rel="noopener noreferrer">
           {t('dev.cta')} <Icon name="external" size={15} />
         </a>
+        <p class="developer-note__idea">
+          {t('dev.idea')}{' '}
+          <a href={IDEA_CREDIT_URL} target="_blank" rel="noopener noreferrer">
+            {IDEA_CREDIT_NAME}
+          </a>
+          . Al-Hidayah grew from his idea and his vision.
+        </p>
       </div>
     </aside>
   );
