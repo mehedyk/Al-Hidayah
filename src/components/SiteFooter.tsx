@@ -1,6 +1,7 @@
 import { HADI_URL } from '../lib/links';
 import { reportUrl } from '../lib/app-context';
 import { FooterMedia } from './FooterMedia';
+import { DeveloperNote } from './DeveloperNote';
 import { Icon, LogoMark } from './Icon';
 
 const exploreLinks = [
@@ -114,6 +115,9 @@ export function SiteFooter({ reference, media = true }: { reference?: string; me
           </div>
         </div>
 
+        <div class="footer-developer">
+          <DeveloperNote variant="line" />
+        </div>
         <div class="footer-bottom">
           <p class="footer-note">
             A reminder tool, not a replacement for qualified scholarship.{' '}
