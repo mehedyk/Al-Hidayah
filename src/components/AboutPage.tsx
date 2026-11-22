@@ -1,3 +1,5 @@
+import { cardPhotoCredits } from '../lib/credits';
+import { DeveloperNote } from './DeveloperNote';
 import { reportUrl } from '../lib/app-context';
 import { scenes } from '../lib/scenes';
 import { Icon, Ornament } from './Icon';
@@ -128,12 +130,29 @@ export function AboutPage() {
             </li>
           ))}
         </ul>
+        <p>Photographs used only as share-card backgrounds:</p>
+        <ul class="credit-list">
+          {cardPhotoCredits.map((photo) => (
+            <li>
+              <a href={photo.page} target="_blank" rel="noreferrer">
+                {photo.title}
+              </a>{' '}
+              — {photo.photographer}
+            </li>
+          ))}
+        </ul>
         <p>
-          The looping ink-landscape film in the footer and on the 404 page was supplied by the
-          project owner. It is muted and silent, and it is replaced by a still image when you turn on
-          Reduce motion.
+          The slowed, looping ink-landscape film in the footer and on the 404 page was supplied by
+          the project owner. It is silent, and it is replaced by a still image when you turn on
+          Reduce motion. The 404 page can play a nature ambience (real recordings you add under
+          public/sounds); credits for any recordings appear in the calm-sounds panel.
+        </p>
+        <p>
+          The Bangla interface uses the Kalpurush typeface (Akkhor52), included unmodified with its
+          licence note in public/fonts/.
         </p>
       </section>
+      <DeveloperNote />
       <section class="report-panel">
         <div>
           <p class="eyebrow">Seen something wrong?</p>
