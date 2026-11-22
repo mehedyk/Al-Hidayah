@@ -34,9 +34,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
     <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    {route === 'home' && (
-      <link rel="preload" as="image" href="/images/hero-desktop.webp" media="(min-width: 768px)" />
-    )}
+    <!-- Same-origin and external, so the strict CSP is untouched. Sets the saved theme and scene
+         wallpaper before first paint: no page shows a fixed default image while the app loads. -->
+    <script is:inline src="/theme-init.js"></script>
     <title>{title}</title>
   </head>
   <body class={`route-${route}`}>
