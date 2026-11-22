@@ -43,6 +43,32 @@ const dictionary = {
   'sound.title': ['Calm sounds', 'প্রশান্তির শব্দ'],
   'sound.open': ['Calm sounds mixer', 'শব্দ মিক্সার'],
   'share.title': ['Share this reminder', 'এই স্মরণিকা শেয়ার করুন'],
+  'nf.eyebrow': ['404', '৪০৪'],
+  'nf.title': ['This page doesn’t exist.', 'এই পাতাটি নেই।'],
+  'nf.body': ['The reminder you are looking for may have moved.', 'আপনি যে স্মরণিকা খুঁজছেন তা হয়তো সরে গেছে।'],
+  'nf.home': ['Return home', 'হোমে ফিরুন'],
+  'nf.quran': ['Browse the Qur’an', 'কুরআন দেখুন'],
+  'nf.ambience': [
+    'Nature ambience: birds, a light breeze and flowing water.',
+    'প্রকৃতির শব্দ: পাখির ডাক, হালকা বাতাস ও বয়ে চলা জল।',
+  ],
+  'nf.play': ['Play ambience', 'শব্দ চালান'],
+  'nf.pause': ['Mute ambience', 'শব্দ বন্ধ করুন'],
+  'nf.mixnote': [
+    'Your calm-sounds mix stays muted on this page so this ambience plays on its own. It returns when you leave.',
+    'এই পাতায় আপনার শান্তির শব্দের মিক্স বন্ধ থাকে, যাতে এই শব্দটি আলাদাভাবে শোনা যায়। পাতা ছেড়ে গেলে তা ফিরে আসবে।',
+  ],
+  'dev.title': ['A note from the developer', 'ডেভেলপারের পক্ষ থেকে একটি কথা'],
+  'dev.body': [
+    'I built Al-Hidayah on my own, in my own time, because I wanted a calm and honest place for the Qur’an online. I am currently looking for work: a full-time role, an internship, or paid project work in web development. If you or your team could use someone who takes the details seriously, I would be glad to hear from you.',
+    'আমি আল-হিদায়াহ নিজের উদ্যোগে, নিজের সময়ে তৈরি করেছি, কারণ অনলাইনে কুরআনের জন্য একটি শান্ত ও নির্ভরযোগ্য জায়গা চেয়েছিলাম। আমি এখন কাজ খুঁজছি: ওয়েব ডেভেলপমেন্টে পূর্ণকালীন চাকরি, ইন্টার্নশিপ বা বেতনভুক্ত প্রজেক্টের কাজ। আপনার বা আপনার দলের যদি এমন কাউকে দরকার হয় যে খুঁটিনাটিকে গুরুত্ব দেয়, তাহলে যোগাযোগ করলে আমি খুশি হব।',
+  ],
+  'dev.short': [
+    'The developer is open to work: full-time, internship or paid projects.',
+    'ডেভেলপার কাজের জন্য প্রস্তুত: পূর্ণকালীন, ইন্টার্নশিপ বা বেতনভুক্ত প্রজেক্ট।',
+  ],
+  'dev.cta': ['Get in touch on GitHub', 'GitHub-এ যোগাযোগ করুন'],
+  'lang.button': ['Language', 'ভাষা'],
   'settings.language': ['Interface language', 'ইন্টারফেসের ভাষা'],
 } as const satisfies Record<string, readonly [string, string]>;
 
