@@ -293,19 +293,67 @@ select {
 }
 
 .site-header {
-  position: relative;
-  z-index: 20;
+  /* --hdr-p is written by useCondensingHeader() in Header.tsx: 0 = full size, 1 = condensed. */
+  --hdr-p: 0;
+  --hdr-fade: var(--hdr-p); /* how see-through the bar is; hover/focus bring it back to 0 */
+  --hdr-full: 6.5rem;
+  --hdr-min: 3.75rem;
+  position: fixed;
+  z-index: 40;
+  inset: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: min(calc(100% - 3rem), 86rem);
-  min-height: 6.5rem;
+  min-height: calc(var(--hdr-full) - (var(--hdr-full) - var(--hdr-min)) * var(--hdr-p));
+  padding-inline: 0;
   margin-inline: auto;
   border-bottom: 1px solid var(--line-soft);
+  border-radius: 0 0 1.25rem 1.25rem;
+  transition:
+    min-height 220ms ease-out,
+    padding 350ms var(--ease),
+    background-color 350ms var(--ease),
+    box-shadow 350ms var(--ease),
+    border-color 350ms var(--ease),
+    color 350ms var(--ease);
 }
-.site-header--hero {
-  position: absolute;
-  inset: 0 0 auto;
+/* Once the page has scrolled, the bar gets a soft glass surface so it stays legible over content. */
+.site-header[data-scrolled='true'] {
+  padding-inline: 1.25rem;
+  /* The surface gets more transparent as the bar condenses. The blur stays at full strength, so
+     text scrolling underneath never competes with the bar's own text. (Fading the whole element
+     with `opacity` would fade the blur too and let the page text show through sharply.) */
+  background: color-mix(in srgb, var(--bg-glass) calc(100% - 28% * var(--hdr-fade)), transparent);
+  border-color: var(--line);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px) saturate(1.15);
+}
+.site-header > * {
+  opacity: calc(1 - 0.3 * var(--hdr-fade));
+  transition: opacity 450ms var(--ease);
+}
+/* The faded bar comes back to full strength when it is being used. */
+.site-header:hover,
+.site-header:focus-within {
+  --hdr-fade: 0;
+}
+.site-header .brand strong {
+  font-size: calc(1.85rem - 0.4rem * var(--hdr-p));
+}
+.site-header .brand small {
+  opacity: calc(1 - 1.5 * var(--hdr-p));
+}
+/* The bar is fixed, so pages that start with it reserve its full height in the flow. */
+.site-header-spacer {
+  height: 6.5rem;
+}
+html {
+  scroll-padding-top: 5rem;
+}
+.site-header--hero:not([data-scrolled='true']) {
+  --gold: var(--hero-gold, #f3cf7d);
+  --gold-bright: var(--hero-gold, #f3cf7d);
   color: #f3ead3;
   border-bottom-color: rgb(226 184 87 / 20%);
 }
@@ -330,7 +378,7 @@ select {
   color: var(--text-quiet);
   font-size: 0.73rem;
 }
-.site-header--hero .brand small {
+.site-header--hero:not([data-scrolled='true']) .brand small {
   color: #b9c7be;
 }
 .logo-mark {
@@ -353,7 +401,7 @@ select {
   font-size: 0.92rem;
   transition: 250ms var(--ease);
 }
-.site-header--hero .desktop-nav a {
+.site-header--hero:not([data-scrolled='true']) .desktop-nav a {
   color: #b9c7be;
 }
 .desktop-nav a:hover,
@@ -362,9 +410,13 @@ select {
   background: var(--gold-soft);
   border-color: var(--line-soft);
 }
-.site-header--hero .desktop-nav a.active {
+.site-header--hero:not([data-scrolled='true']) .desktop-nav a.active {
   color: #18251b;
   background: #f3cf7d;
+}
+.site-header--hero[data-scrolled='true'] .desktop-nav a.active {
+  color: #18251b;
+  background: var(--gold);
 }
 .header-actions {
   display: flex;
@@ -405,7 +457,6 @@ select {
   background: var(--hero-end, #08241d);
 }
 .hero-art,
-.hero-art img,
 .hero-scrim,
 .hero-scene {
   position: absolute;
@@ -415,12 +466,6 @@ select {
 }
 .hero-art {
   z-index: -4;
-}
-.hero-art img {
-  max-width: none;
-  object-fit: cover;
-  object-position: center 42%;
-  animation: hero-breathe 24s ease-in-out infinite alternate;
 }
 .hero-scrim {
   z-index: -3;
@@ -1992,10 +2037,17 @@ input[role='switch']:checked::after {
     font-size: 2.25rem;
   }
   .site-header {
-    min-height: 5.4rem;
+    --hdr-full: 5.4rem;
+    --hdr-min: 3.5rem;
+  }
+  .site-header-spacer {
+    height: 5.4rem;
+  }
+  .site-header[data-scrolled='true'] {
+    padding-inline: 0.85rem;
   }
   .site-header .brand strong {
-    font-size: 1.55rem;
+    font-size: calc(1.55rem - 0.3rem * var(--hdr-p));
   }
   .site-header .brand small {
     font-size: 0.62rem;
@@ -2052,9 +2104,6 @@ input[role='switch']:checked::after {
     min-height: 0;
     padding-bottom: 1rem;
     overflow: hidden;
-  }
-  .hero-art img {
-    object-position: 57% center;
   }
   .hero-scrim {
     background: linear-gradient(
@@ -2355,7 +2404,7 @@ input[role='switch']:checked::after {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .hero-art img {
+  .hero-art {
     animation: none;
     transform: none;
   }
@@ -2368,7 +2417,7 @@ input[role='switch']:checked::after {
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
-:root[data-motion='reduced'] .hero-art img {
+:root[data-motion='reduced'] .hero-art {
   animation: none;
   transform: none;
 }
@@ -3304,16 +3353,14 @@ html::before {
 }
 
 /* ==========================================================================
-   Hero follows the chosen scene (it used to be hard-wired to the green artwork)
+   The hero shows the chosen scene wallpaper: the same --wall-image every other page uses.
+   There is no fixed hero artwork any more. theme-init.js sets --wall-image before first paint.
    ========================================================================== */
-.hero-art::after {
-  position: absolute;
-  inset: 0;
-  content: '';
-  background: var(--wall-image, none) center / cover no-repeat;
+.hero-art {
+  background: var(--wall-image, none) center 42% / cover no-repeat;
   animation: hero-breathe 24s ease-in-out infinite alternate;
 }
-:root[data-motion='reduced'] .hero-art::after {
+:root[data-motion='reduced'] .hero-art {
   animation: none;
 }
 :root[data-scene='ink'] {
@@ -3882,4 +3929,130 @@ html::before {
   color: var(--ink);
   background: rgb(255 255 255 / 55%);
   border: 1px solid var(--ink);
+}
+
+/* ==========================================================================
+   404 and footer legibility. The ink is darker (about 9:1 on the paper colour instead of 6:1),
+   and on the 404 page the text sits on a frosted paper panel so the film behind it, whatever
+   frame it is on, can never make a word hard to read.
+   ========================================================================== */
+.site-footer,
+.video-stage {
+  --ink: #0d3944;
+  --ink-soft: #154a56;
+}
+.footer-developer {
+  border-top-color: rgb(13 57 68 / 28%);
+}
+.not-found {
+  width: min(calc(100% - 2rem), 48rem);
+  padding: clamp(2rem, 6vh, 3.5rem) clamp(1.25rem, 4vw, 3rem);
+  margin: clamp(1.25rem, 5vh, 3.5rem) auto 0;
+  background: rgb(247 243 239 / 84%);
+  border: 1px solid rgb(13 57 68 / 24%);
+  border-radius: 1.5rem;
+  box-shadow: 0 18px 50px rgb(13 57 68 / 16%);
+  backdrop-filter: blur(12px);
+}
+.not-found .eyebrow {
+  color: var(--ink);
+  font-weight: 600;
+}
+.not-found p:not(.eyebrow) {
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+.not-found .button--secondary,
+.not-found .button--ghost {
+  color: var(--ink);
+  background: rgb(255 255 255 / 80%);
+  border-color: var(--ink);
+}
+.not-found__links {
+  display: grid;
+  gap: 0.7rem;
+  justify-items: center;
+  width: 100%;
+  margin-top: 0.4rem;
+}
+.not-found__links-title {
+  margin: 0;
+  font-size: 0.8rem !important;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.not-found__links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.not-found__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.45rem 1rem;
+  color: var(--ink);
+  background: rgb(255 255 255 / 72%);
+  border: 1px solid rgb(13 57 68 / 45%);
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition:
+    background-color 200ms var(--ease),
+    color 200ms var(--ease);
+}
+.not-found__links a:hover {
+  color: var(--cream);
+  background: var(--ink);
+}
+.not-found__ambience {
+  background: rgb(255 255 255 / 72%);
+  border-color: rgb(13 57 68 / 30%);
+}
+.not-found__ambience p,
+.not-found__mixnote {
+  color: var(--ink);
+  opacity: 1;
+}
+.site-footer--bare .footer-inner {
+  width: min(calc(100% - 2rem), var(--max));
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  background: rgb(247 243 239 / 84%);
+  border: 1px solid rgb(13 57 68 / 24%);
+  border-radius: 1.5rem;
+  box-shadow: 0 18px 50px rgb(13 57 68 / 16%);
+  backdrop-filter: blur(12px);
+}
+.site-footer--bare {
+  padding-inline: 0;
+}
+@media (max-width: 1100px) {
+  /* On tablets and phones the film sits under the copy on plain paper, so no panel is needed. */
+  .not-found,
+  .site-footer--bare .footer-inner {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+}
+
+.developer-line__idea {
+  margin-left: auto;
+}
+.developer-note__idea {
+  margin: 0.9rem 0 0;
+  font-size: 0.92rem;
+}
+.developer-note__idea a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
