@@ -276,7 +276,8 @@ function QuranBrowser() {
       return;
     }
     document.getElementById(`ayah-${playingAyah}`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // `navigate` and `selectedNumber` are intentionally read at call time: the effect must run only
+    // when playback moves to a new verse, not whenever the reader re-renders.
   }, [playingSurah, playingAyah]);
 
   const summary = quranSurahs[selectedNumber - 1];
