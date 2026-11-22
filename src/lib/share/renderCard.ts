@@ -27,7 +27,7 @@ export interface CardResult {
 
 const ARABIC = '"Amiri Quran", "Amiri", serif';
 const LATIN = '"Cormorant Garamond", Georgia, serif';
-const BANGLA = '"Kalpurush", "Noto Serif Bengali", serif';
+const BANGLA = '"Noto Serif Bengali", serif';
 const UI = 'Inter, sans-serif';
 
 const imageCache = new Map<string, Promise<HTMLImageElement | undefined>>();
@@ -53,7 +53,6 @@ export async function ensureCardFonts(): Promise<void> {
     document.fonts.load('400 30px "Cormorant Garamond"'),
     document.fonts.load('italic 400 30px "Cormorant Garamond"'),
     document.fonts.load('400 28px "Noto Serif Bengali"', 'বাংলা'),
-    document.fonts.load('400 28px "Kalpurush"', 'বাংলা'),
     document.fonts.load('500 22px Inter'),
   ]).catch(() => undefined);
 }
