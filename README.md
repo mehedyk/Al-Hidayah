@@ -152,15 +152,18 @@ Every control below is exercised by an automated click-through that runs **under
 | Feature | How it works |
 | --- | --- |
 | **Qur'an recitation** | *Listen* on any verse, or *Play surah*. Seven reciters, speed 0.75-1.5x, auto-continue into the next verse and surah, the current verse is highlighted and scrolled into view. Audio is streamed verse by verse from [EveryAyah](https://everyayah.com) (nothing is bundled). That host is the only addition to the CSP's `media-src`. Add a reciter by appending a row to `src/lib/audio/recitation.ts`. |
-| **Calm sounds** | A floating mixer on every page: rain, wind, stream, ocean waves, morning birds and night crickets, each with its own volume, a master volume, four presets and a sleep timer. They are **synthesised on your device** with the Web Audio API, so there are no audio files, no licensing questions and no network use. Only natural sounds, no music. Your mix is remembered. |
-| **Bangla mode** | *Settings → Interface language*: English, বাংলা, or both together ("Home · হোম"). It translates the app's own labels, never the scripture. Bangla text uses **Kalpurush** when it is available (see below), otherwise Noto Serif Bengali. |
+| **Calm sounds** | A floating mixer on every page that plays **real recordings** (not generated sound): rain, thunderstorm, wind, stream, ocean waves, morning birds and night crickets. Each has its own volume; there is a master volume, presets and a sleep timer, and your mix is remembered. Add the licensed files to `public/sounds/` (names and download links are in the README there); a layer without a file is simply not shown. Only natural sounds, no music. |
+| **404 page** | The ink-landscape film plays in slow motion (still looping), and a real nature recording (birds, a light breeze, flowing water: `public/sounds/ambience-404.mp3`) plays softly or on one tap. The calm-sounds mix is muted on that page, which the page explains, and a *Resume calm sounds* chip appears when you leave. |
+| **Language button** | One tap in the header cycles English, বাংলা and both together. |
+| **Developer note** | A plain, dignified note in the footer and on the About page: the developer is open to work (full-time, internship or paid projects). |
+| **Bangla mode** | *Settings → Interface language*: English, বাংলা, or both together ("Home · হোম"). It translates the app's own labels, never the scripture. Bangla text in the interface uses **Kalpurush** (included); share cards keep Noto Serif Bengali. |
 | **Share Studio** | The card is now drawn on a canvas, so the preview is exactly the downloaded PNG (1080 px wide). Formats: Post, Story, Square. Templates: five built-in designs, the five scene photographs, and any pictures you add yourself. Actions: Download, Copy image, Share (where the browser supports it), Copy text, and direct links to WhatsApp, Telegram, X, Facebook and Email. |
 | **Hadi** | "Want to read it more comfortably?" links to [Hadi](https://hadi-quran-guide.vercel.app/) on the home card, the reader and the footer. |
 
-#### Two files only you can add
+#### Things only you can add
 
-1. **Kalpurush font**: download `kalpurush.ttf` from a source you trust, check its licence, and place it at `public/fonts/kalpurush.ttf`. Nothing else changes; until then the fallback font is used.
-2. **Your own card templates**: put licensed pictures in `public/share-templates/` and list them in `templates.json` (see the README in that folder). Good places: [Pexels](https://www.pexels.com/search/nature%20landscape/), [Unsplash](https://unsplash.com/s/photos/mountains) and [Pixabay](https://pixabay.com/images/search/landscape/), whose licences allow this kind of use. Keep the photographer's credit in the `credit` field.
+1. **Calm-sound recordings**: see `public/sounds/README.md` (exact file names, where to download licensed ones, how to credit them).
+2. **More card backgrounds**: put licensed pictures in `public/share-templates/` and list them in `templates.json`. Five of your photographs are already listed there.
 
 ### Why the buttons used to be dead
 
@@ -231,7 +234,7 @@ stateDiagram-v2
     Idle --> Sanitise: user changes a setting
 ```
 
-**Want the photos served from your own domain?** The app hot-links the Pexels CDN by default. Run `pnpm wallpapers:fetch` once (needs outbound internet): it downloads all ten files into `public/wallpapers/`, flips `WALLPAPER_SOURCE` to `'local'`, and then you can drop `https://images.pexels.com` from the Content-Security-Policy.
+**Want the photos served from your own domain?** The app hot-links the Pexels CDN by default. Run `pnpm wallpapers:fetch` once (needs outbound internet): it downloads the five hot-linked scene photos (the five from your own pictures already ship in the repo) into `public/wallpapers/`, flips `WALLPAPER_SOURCE` to `'local'`, and then you can drop `https://images.pexels.com` from the Content-Security-Policy.
 
 ---
 
