@@ -38,13 +38,15 @@ describe('settings sanitiser', () => {
 });
 
 describe('scene catalogue', () => {
-  it('has five unique scenes, each with a credited Pexels photo', () => {
-    expect(new Set(scenes.map((scene) => scene.id)).size).toBe(5);
+  it('has ten unique scenes, each with a credited Pexels photo', () => {
+    expect(new Set(scenes.map((scene) => scene.id)).size).toBe(10);
     for (const scene of scenes) {
       expect(scene.photographer.length).toBeGreaterThan(0);
       expect(scene.page).toContain(`${scene.photoId}`);
       expect(scene.page.startsWith('https://www.pexels.com/photo/')).toBe(true);
-      expect(wallpaperUrl(scene, 1080)).toContain(`pexels-photo-${scene.photoId}.jpeg`);
+      expect(wallpaperUrl(scene, 1080)).toContain(
+        scene.local ? `/wallpapers/${scene.id}-1080.jpg` : `pexels-photo-${scene.photoId}.jpeg`,
+      );
     }
     expect(getScene('ink').name).toBe('Ink Mountains');
   });
