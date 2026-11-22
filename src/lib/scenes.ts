@@ -9,14 +9,26 @@
  * `pnpm wallpapers:fetch` to download them into public/wallpapers/ and serve them from your own
  * origin instead; the script flips the constant below for you.
  */
-export type SceneId = 'emerald' | 'ink' | 'dawn' | 'sahara' | 'midnight';
+export type SceneId =
+  | 'emerald'
+  | 'ink'
+  | 'dawn'
+  | 'sahara'
+  | 'midnight'
+  | 'storm'
+  | 'lagoon'
+  | 'palm'
+  | 'ember'
+  | 'dew';
 
 export interface Scene {
   id: SceneId;
   name: string;
   mood: string;
-  /** Pexels photo id, used to build the CDN URL. */
+  /** Pexels photo id (for the credit link and, for remote scenes, the CDN URL). */
   photoId: number;
+  /** Shipped in public/wallpapers/, so it loads from this site and works offline. */
+  local?: boolean;
   photographer: string;
   title: string;
   page: string;
@@ -79,6 +91,61 @@ export const scenes: Scene[] = [
     page: 'https://www.pexels.com/photo/crescent-moon-in-a-starry-night-sky-28849652/',
     swatch: ['#080d28', '#1d2a63', '#e6ecff'],
   },
+  {
+    id: 'storm',
+    name: 'Storm Coast',
+    mood: 'Surf under a brooding sky',
+    photoId: 22699879,
+    local: true,
+    photographer: 'Eric Prouzet',
+    title: 'Waves rolling onto a grassy coast under storm clouds',
+    page: 'https://www.pexels.com/photo/22699879/',
+    swatch: ['#101d27', '#213a4a', '#9cc4d9'],
+  },
+  {
+    id: 'lagoon',
+    name: 'Turquoise Shore',
+    mood: 'Clear water and a green headland',
+    photoId: 188014,
+    local: true,
+    photographer: 'Junnoet',
+    title: 'Turquoise sea, rocks and a green headland under blue sky',
+    page: 'https://www.pexels.com/photo/188014/',
+    swatch: ['#0b2438', '#1a4766', '#7fd4e6'],
+  },
+  {
+    id: 'palm',
+    name: 'Palm Mist',
+    mood: 'Morning light through palms',
+    photoId: 26562767,
+    local: true,
+    photographer: 'tonmoydipu2030',
+    title: 'Palm trees in morning mist',
+    page: 'https://www.pexels.com/photo/26562767/',
+    swatch: ['#14261a', '#28492f', '#c4d98a'],
+  },
+  {
+    id: 'ember',
+    name: 'Ember Sky',
+    mood: 'The sun setting into orange haze',
+    photoId: 25527078,
+    local: true,
+    photographer: 'Radis',
+    title: 'Sun setting in an orange sky (cropped to the sky)',
+    page: 'https://www.pexels.com/photo/25527078/',
+    swatch: ['#2d1710', '#52291c', '#ff9a62'],
+  },
+  {
+    id: 'dew',
+    name: 'Morning Dew',
+    mood: 'Dew on grass in low sun',
+    photoId: 40401971,
+    local: true,
+    photographer: 'tonmoydipu2030',
+    title: 'Dew on grass in low light',
+    page: 'https://www.pexels.com/photo/40401971/',
+    swatch: ['#1a2412', '#324424', '#d5c46a'],
+  },
 ];
 
 export const defaultSceneId: SceneId = 'emerald';
@@ -93,6 +160,7 @@ export function getScene(id: SceneId): Scene {
 
 /** URL of the wallpaper for a scene; `width` picks a smaller file on phones. */
 export function wallpaperUrl(scene: Scene, width: 400 | 1080 | 1920 = 1920): string {
+  if (scene.local) return `/wallpapers/${scene.id}-${width}.jpg`;
   if (WALLPAPER_SOURCE === 'local') return `/wallpapers/${scene.id}-${width === 400 ? 1080 : width}.jpg`;
   return `${WALLPAPER_CDN}/photos/${scene.photoId}/pexels-photo-${scene.photoId}.jpeg?auto=compress&cs=tinysrgb&w=${width}`;
 }
