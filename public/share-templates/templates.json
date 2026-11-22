@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": "reflected-palms",
+    "name": "Reflected Palms",
+    "file": "reflected-palms.jpg",
+    "tone": "light",
+    "accent": "#bfe3f2",
+    "credit": "Photo: Ferdous / Pexels #13944508"
+  },
+  {
+    "id": "misty-road",
+    "name": "Misty Road",
+    "file": "misty-road.jpg",
+    "tone": "light",
+    "accent": "#f3c9d6",
+    "credit": "Photo: Hira Dewan / Pexels #29813495"
+  },
+  {
+    "id": "golden-bokeh",
+    "name": "Golden Bokeh",
+    "file": "golden-bokeh.jpg",
+    "tone": "light",
+    "accent": "#ffcf7a",
+    "credit": "Photo: Alimuart / Pexels #15854584"
+  },
+  {
+    "id": "ivy-green",
+    "name": "Ivy Green",
+    "file": "ivy-green.jpg",
+    "tone": "light",
+    "accent": "#c8e6a0",
+    "credit": "Photo: tonmoydipu2030 / Pexels #40401973"
+  },
+  {
+    "id": "ember-sky",
+    "name": "Ember Sky",
+    "file": "ember-sky.jpg",
+    "tone": "light",
+    "accent": "#ffc29c",
+    "credit": "Photo: Radis / Pexels #25527078"
+  }
+]
