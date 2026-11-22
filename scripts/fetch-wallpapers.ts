@@ -11,7 +11,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { scenes, WALLPAPER_CDN } from '../src/lib/scenes';
 
 await mkdir('public/wallpapers', { recursive: true });
-for (const scene of scenes) {
+for (const scene of scenes.filter((entry) => !entry.local)) {
   for (const width of [1080, 1920]) {
     const url = `${WALLPAPER_CDN}/photos/${scene.photoId}/pexels-photo-${scene.photoId}.jpeg?auto=compress&cs=tinysrgb&w=${width}`;
     const response = await fetch(url);
