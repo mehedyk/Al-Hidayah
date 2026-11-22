@@ -32,15 +32,15 @@ The mosque glyph and the Al-Hidayah logo mark are original.
 ## Audio
 
 - Recitation: streamed from EveryAyah (https://everyayah.com); not bundled, not re-hosted. Check their terms for your use.
-- Calm sounds: generated at runtime by `src/lib/audio/ambient.ts`; original work, no recordings.
+- Calm sounds and the 404 ambience: recordings you add under `public/sounds/` (credit them in `credits.json`). None are bundled yet.
 
 ## Fonts
 
-Kalpurush is not bundled. Add `public/fonts/kalpurush.ttf` yourself after confirming its licence.
+Kalpurush (Akkhor52) is included unmodified at `public/fonts/kalpurush.ttf`, with the publisher's licence note in `kalpurush-LICENSE.txt`. That note says the fonts are free for personal use, must not be modified, renamed or resold, and that **commercial use needs the designer's or publisher's permission**. Keep that in mind if the project is monetised.
 
 ## Share templates
 
-Built-in designs are drawn in code. Photo templates reuse the Pexels scene photographs listed above.
+Built-in designs are drawn in code. Photo templates reuse the scene photographs above plus five extra Pexels photographs (Ferdous 13944508, Hira Dewan 29813495, Alimuart 15854584, tonmoydipu2030 40401973, Radis 25527078), supplied by the project owner. Photographer display names were taken from the file names.
 Pictures you add under `public/share-templates/` are yours to license and credit.
 
 ## README figures
