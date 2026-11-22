@@ -129,20 +129,11 @@ export function HomePage() {
 
   return (
     <>
+      <Header route="home" overHero />
       <section class="hero" aria-label="Daily reminder" data-intro={intro}>
-        <picture class="hero-art" aria-hidden="true">
-          <source media="(max-width: 767px)" srcset="/images/hero-mobile.webp" />
-          <img
-            src="/images/hero-desktop.webp"
-            alt=""
-            width="1792"
-            height="1024"
-            fetchpriority="high"
-          />
-        </picture>
+        <div class="hero-art" aria-hidden="true" />
         <div class="hero-scrim" aria-hidden="true" />
         <HeroScene />
-        <Header route="home" overHero />
         <div class="hero-content">
           <p class="hero-date">
             {new Date().toLocaleDateString('en-GB', {
