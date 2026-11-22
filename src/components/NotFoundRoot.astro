@@ -1,0 +1,22 @@
+---
+/**
+ * Mounts the 404 page content without Astro islands (see AppRoot.astro for why: the CSP forbids
+ * the inline scripts islands use). One external module hydrates the server-rendered markup.
+ */
+import { NotFoundContent } from './NotFoundContent';
+---
+
+<div id="not-found-root">
+  <NotFoundContent />
+</div>
+
+<script>
+  import { h, hydrate } from 'preact';
+  import { NotFoundContent } from './NotFoundContent';
+
+  const root = document.getElementById('not-found-root');
+  if (root) {
+    hydrate(h(NotFoundContent, {}), root);
+    document.documentElement.dataset.hydrated = 'true';
+  }
+</script>
