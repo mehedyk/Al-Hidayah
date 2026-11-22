@@ -4,7 +4,7 @@ test('scene themes switch from Settings, persist, and pair with light and dark',
   await page.goto('/settings/');
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'full');
   await expect(page.locator('html')).toHaveAttribute('data-scene', 'emerald');
-  await expect(page.locator('.scene-card')).toHaveCount(5);
+  await expect(page.locator('.scene-card')).toHaveCount(10);
 
   await page.locator('.scene-card', { hasText: 'Golden Dunes' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-scene', 'sahara');
