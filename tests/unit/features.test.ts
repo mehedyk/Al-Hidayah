@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { translate } from '../../src/lib/i18n';
 import { audioUrl, nextPosition, previousPosition, reciters } from '../../src/lib/audio/recitation';
-import { emptyMix, layers, sanitizeMix } from '../../src/lib/audio/ambient';
+import { emptyMix, layerCatalog, sanitizeMix } from '../../src/lib/audio/ambient';
 import { defaultSettings, sanitizeSettings } from '../../src/lib/settings';
 import { loadCustomTemplates } from '../../src/lib/share/templates';
 
@@ -10,6 +10,8 @@ describe('interface language', () => {
     expect(translate('nav.home', 'en')).toBe('Home');
     expect(translate('nav.home', 'bn')).toBe('হোম');
     expect(translate('nav.home', 'both')).toBe('Home · হোম');
+    expect(translate('dev.body', 'en')).toContain('looking for work');
+    expect(translate('dev.body', 'bn').length).toBeGreaterThan(50);
   });
   it('falls back to English for unknown saved values', () => {
     expect(sanitizeSettings({ uiLanguage: 'fr' }).uiLanguage).toBe('en');
@@ -42,9 +44,10 @@ describe('calm sounds', () => {
     expect(mix.master).toBe(1);
     expect(mix.levels.rain).toBe(0);
     expect(mix.levels.wind).toBe(0.5);
-    expect(Object.keys(mix.levels)).toHaveLength(layers.length);
+    expect(Object.keys(mix.levels)).toHaveLength(layerCatalog.length);
+    expect(layerCatalog.map((layer) => layer.id)).toContain('thunderstorm');
     expect(sanitizeMix('nonsense')).toEqual(sanitizeMix(null));
-    expect(emptyMix.levels.rain).toBe(0);
+    expect(emptyMix.levels.rain).toBeUndefined();
   });
 });
 
