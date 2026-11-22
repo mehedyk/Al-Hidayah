@@ -1,4 +1,4 @@
-const CACHE = 'al-hidayah-v3';
+const CACHE = 'al-hidayah-v4';
 const SHELL = [
   '/',
   '/quran/',
@@ -10,8 +10,7 @@ const SHELL = [
   '/about/',
   '/settings/',
   '/manifest.webmanifest',
-  '/images/hero-desktop.webp',
-  '/images/hero-mobile.webp',
+  '/theme-init.js',
 ];
 
 self.addEventListener('install', (event) => {
