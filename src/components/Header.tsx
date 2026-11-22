@@ -16,6 +16,12 @@ const navigation: Array<{
   { route: 'settings', label: 'nav.settings', icon: 'settings' },
 ];
 
+const languageLabels = {
+  en: ['EN', 'English'],
+  bn: ['বাং', 'বাংলা'],
+  both: ['EN+বাং', 'English + বাংলা'],
+} as const;
+
 function href(route: Route): string {
   return route === 'home' ? '/' : `/${route}/`;
 }
@@ -65,6 +71,21 @@ export function Header({ route, overHero = false }: { route: Route; overHero?: b
           <Icon name="sun" size={18} />
           <span />
           <Icon name="moon" size={17} />
+        </button>
+        <button
+          class="lang-toggle"
+          type="button"
+          onClick={() =>
+            updateSettings({
+              uiLanguage:
+                settings.uiLanguage === 'en' ? 'bn' : settings.uiLanguage === 'bn' ? 'both' : 'en',
+            })
+          }
+          aria-label={`${t('lang.button')}: ${languageLabels[settings.uiLanguage][1]}. Change`}
+          title={languageLabels[settings.uiLanguage][1]}
+        >
+          <Icon name="languages" size={18} />
+          <span>{languageLabels[settings.uiLanguage][0]}</span>
         </button>
         <button
           class="scene-toggle"
