@@ -25,3 +25,9 @@ const file = 'src/lib/scenes.ts';
 const source = await readFile(file, 'utf8');
 await writeFile(file, source.replace("WALLPAPER_SOURCE: WallpaperSource = 'remote'", "WALLPAPER_SOURCE: WallpaperSource = 'local'"));
 console.log('Switched WALLPAPER_SOURCE to local.');
+
+// The pre-paint script must agree with scenes.ts (tests/unit/themeInit.test.ts checks this).
+const initFile = 'public/theme-init.js';
+const init = await readFile(initFile, 'utf8');
+await writeFile(initFile, init.replace("WALLPAPER_SOURCE = 'remote'", "WALLPAPER_SOURCE = 'local'"));
+console.log('Switched WALLPAPER_SOURCE in theme-init.js to local.');
