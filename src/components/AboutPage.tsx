@@ -1,5 +1,6 @@
 import { cardPhotoCredits } from '../lib/credits';
 import { DeveloperNote } from './DeveloperNote';
+import { IDEA_CREDIT_NAME, IDEA_CREDIT_URL } from '../lib/links';
 import { reportUrl } from '../lib/app-context';
 import { scenes } from '../lib/scenes';
 import { Icon, Ornament } from './Icon';
@@ -150,6 +151,17 @@ export function AboutPage() {
         <p>
           The Bangla interface uses the Kalpurush typeface (Akkhor52), included unmodified with its
           licence note in public/fonts/.
+        </p>
+      </section>
+      <section class="artwork-credit" id="idea-credit">
+        <p class="eyebrow">Idea and vision</p>
+        <h2>Credit where it began.</h2>
+        <p>
+          Al-Hidayah began as the idea, and carries much of the vision, of{' '}
+          <a href={IDEA_CREDIT_URL} target="_blank" rel="noopener noreferrer">
+            {IDEA_CREDIT_NAME}
+          </a>
+          . Thank you.
         </p>
       </section>
       <DeveloperNote />
