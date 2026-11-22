@@ -2,4 +2,8 @@
 /** Where people can reach the developer about work. Change this if you prefer another contact. */
 export const DEVELOPER_URL = 'https://mehedy.netlify.app/';
 
+/** The person whose idea and vision Al-Hidayah grew from. */
+export const IDEA_CREDIT_NAME = 'Sabbir';
+export const IDEA_CREDIT_URL = 'https://www.facebook.com/m.sabbirrrr';
+
 export const HADI_URL = 'https://hadi-quran-guide.vercel.app/';
