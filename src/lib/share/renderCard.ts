@@ -160,7 +160,6 @@ export async function renderCard(
   const available = bottom - top;
 
   const reference = formatReference(item);
-  let result: CardResult;
   type Block = { font: string; lines: string[]; lineHeight: number; color: string; dir: 'rtl' | 'ltr'; gap: number };
   let blocks: Block[] = [];
   let used = 0;
@@ -193,7 +192,7 @@ export async function renderCard(
     used = blocks.reduce((sum, block) => sum + block.lines.length * block.lineHeight + block.gap, 0);
     if (used <= available) break;
   }
-  result = { photo, overflow: used > available };
+  const result: CardResult = { photo, overflow: used > available };
 
   // Readable panel behind text on photos.
   const startY = top + Math.max(0, (available - used) / 2);
