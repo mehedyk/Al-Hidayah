@@ -6,22 +6,7 @@
  * them). A layer only appears in the mixer if its file exists, so the mixer never shows a control
  * that cannot play. Files are streamed (not decoded into memory), so long recordings are fine.
  */
-export type LayerId =
-  | 'rain'
-  | 'rainroof'
-  | 'thunderstorm'
-  | 'wind'
-  | 'desert'
-  | 'stream'
-  | 'river'
-  | 'waterfall'
-  | 'waves'
-  | 'seagulls'
-  | 'birds'
-  | 'forest'
-  | 'crickets'
-  | 'frogs'
-  | 'fire';
+export type LayerId = 'rain' | 'thunderstorm' | 'wind' | 'stream' | 'waves' | 'birds' | 'crickets';
 
 export interface LayerInfo {
   id: LayerId;
@@ -37,20 +22,12 @@ const names = (...bases: string[]): string[] =>
 
 export const layerCatalog: LayerInfo[] = [
   { id: 'rain', name: 'Rain', hint: 'Steady rainfall', files: names('rain') },
-  { id: 'rainroof', name: 'Rain on a roof', hint: 'Drops on tin or tiles', files: names('rainroof', 'rain-roof') },
   { id: 'thunderstorm', name: 'Thunderstorm', hint: 'Rain with distant thunder', files: names('thunderstorm', 'thunder') },
   { id: 'wind', name: 'Wind', hint: 'A slow breeze', files: names('wind') },
-  { id: 'desert', name: 'Desert wind', hint: 'Open, empty land', files: names('desert', 'desertwind') },
   { id: 'stream', name: 'Stream', hint: 'Running water', files: names('stream', 'water') },
-  { id: 'river', name: 'River', hint: 'A wide, slow current', files: names('river') },
-  { id: 'waterfall', name: 'Waterfall', hint: 'Falling water', files: names('waterfall') },
   { id: 'waves', name: 'Ocean waves', hint: 'Surf rolling in', files: names('waves', 'oceanwaves', 'oceanwaves-10') },
-  { id: 'seagulls', name: 'Seagulls', hint: 'Gulls over the shore', files: names('seagulls') },
   { id: 'birds', name: 'Morning birds', hint: 'Birdsong', files: names('birds') },
-  { id: 'forest', name: 'Forest', hint: 'Leaves, birds and quiet', files: names('forest') },
   { id: 'crickets', name: 'Night crickets', hint: 'A warm evening hush', files: names('crickets') },
-  { id: 'frogs', name: 'Frogs', hint: 'A pond after dusk', files: names('frogs') },
-  { id: 'fire', name: 'Crackling fire', hint: 'Embers and wood', files: names('fire', 'campfire') },
 ];
 
 /** The file each discovered layer resolved to (set by discoverLayers). */
@@ -67,18 +44,10 @@ export const emptyMix: Mix = { master: 0.7, levels: {} };
 
 export const presets: Array<{ name: string; mix: Mix }> = [
   { name: 'Rainy window', mix: { master: 0.7, levels: { rain: 0.7, wind: 0.2 } } },
-  { name: 'Tin roof rain', mix: { master: 0.7, levels: { rainroof: 0.8, thunderstorm: 0.2 } } },
   { name: 'Thunderstorm', mix: { master: 0.7, levels: { thunderstorm: 0.8 } } },
   { name: 'Forest morning', mix: { master: 0.7, levels: { birds: 0.5, stream: 0.4, wind: 0.2 } } },
-  { name: 'Deep forest', mix: { master: 0.7, levels: { forest: 0.7, stream: 0.25 } } },
-  { name: 'Riverside', mix: { master: 0.7, levels: { river: 0.6, birds: 0.3, wind: 0.15 } } },
-  { name: 'Waterfall', mix: { master: 0.7, levels: { waterfall: 0.7, birds: 0.2 } } },
   { name: 'Shoreline', mix: { master: 0.7, levels: { waves: 0.7, wind: 0.3, birds: 0.15 } } },
-  { name: 'Harbour', mix: { master: 0.65, levels: { waves: 0.5, seagulls: 0.35 } } },
   { name: 'Quiet night', mix: { master: 0.6, levels: { crickets: 0.5, wind: 0.25, stream: 0.2 } } },
-  { name: 'Pond at dusk', mix: { master: 0.6, levels: { frogs: 0.5, crickets: 0.4 } } },
-  { name: 'Campfire night', mix: { master: 0.65, levels: { fire: 0.7, crickets: 0.3 } } },
-  { name: 'Desert evening', mix: { master: 0.6, levels: { desert: 0.6, fire: 0.3 } } },
 ];
 
 const KEY = 'al-hidayah:sound-mix:v2';
