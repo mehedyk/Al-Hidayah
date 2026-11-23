@@ -4044,15 +4044,22 @@ html::before {
   }
 }
 
-.developer-line__idea {
-  margin-left: auto;
+.footer-credit {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.9rem 0 0.2rem;
+  margin: 0;
+  border-top: 1px solid rgb(13 57 68 / 28%);
+  font-size: 1rem;
+  font-weight: 500;
 }
-.developer-note__idea {
-  margin: 0.9rem 0 0;
-  font-size: 0.92rem;
-}
-.developer-note__idea a {
-  font-weight: 600;
+.footer-credit a {
+  font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+.footer-credit + .footer-developer {
+  border-top: 0;
+  padding-top: 0.4rem;
 }
