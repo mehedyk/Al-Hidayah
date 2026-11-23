@@ -1,4 +1,4 @@
-import { HADI_URL } from '../lib/links';
+import { HADI_URL, IDEA_CREDIT_NAME, IDEA_CREDIT_URL } from '../lib/links';
 import { reportUrl } from '../lib/app-context';
 import { FooterMedia } from './FooterMedia';
 import { DeveloperNote } from './DeveloperNote';
@@ -115,6 +115,15 @@ export function SiteFooter({ reference, media = true }: { reference?: string; me
           </div>
         </div>
 
+        <p class="footer-credit">
+          <Icon name="sparkles" size={16} />
+          <span>
+            Idea and vision by{' '}
+            <a href={IDEA_CREDIT_URL} target="_blank" rel="noopener noreferrer">
+              {IDEA_CREDIT_NAME}
+            </a>
+          </span>
+        </p>
         <div class="footer-developer">
           <DeveloperNote variant="line" />
         </div>
