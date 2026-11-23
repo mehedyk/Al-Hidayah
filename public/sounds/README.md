@@ -46,12 +46,8 @@ Also useful: [OpenGameArt rain loops](https://opengameart.org/content/rain-loopa
 Copy `credits.example.json` to `credits.json` and fill in one entry per file you added. Only `title`
 is required; `author`, `license` and an `https://` `url` are optional.
 
-## More sound modes
+## File names and formats
 
-The mixer now knows 15 layers. Each appears only if its file exists, and any of these extensions
-works: `.mp3`, `.ogg`, `.m4a`, `.wav`. Accepted names (first match wins):
-
-`rain`, `rainroof` (or `rain-roof`), `thunderstorm` (or `thunder`), `wind`, `desert`, `stream`
-(or `water`), `river`, `waterfall`, `waves` (or `oceanwaves`), `seagulls`, `birds`, `forest`,
-`crickets`, `frogs`, `fire` (or `campfire`). Credits in `credits.json` can be keyed by the layer
-name or by the file name.
+`.mp3`, `.ogg`, `.m4a` and `.wav` all work. Besides the names in the table above, these alternate
+names are also found: `thunder` (thunderstorm), `water` (stream), `oceanwaves` / `oceanwaves-10`
+(waves). Credits in `credits.json` can be keyed by the layer name or the file name.
