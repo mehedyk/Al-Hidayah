@@ -69,7 +69,7 @@ const dictionary = {
     'ডেভেলপার কাজের জন্য প্রস্তুত: পূর্ণকালীন, ইন্টার্নশিপ বা বেতনভুক্ত প্রজেক্ট।',
   ],
   'dev.idea': ['Idea and vision by', 'ধারণা ও ভিশন:'],
-  'dev.cta': ['Get in touch on GitHub', 'GitHub-এ যোগাযোগ করুন'],
+  'dev.cta': ['See my portfolio', 'আমার পোর্টফোলিও দেখুন'],
   'lang.button': ['Language', 'ভাষা'],
   'settings.language': ['Interface language', 'ইন্টারফেসের ভাষা'],
 } as const satisfies Record<string, readonly [string, string]>;
