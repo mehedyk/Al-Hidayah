@@ -19,20 +19,12 @@ import { Icon, type IconName } from './Icon';
 
 const layerIcons: Record<LayerId, IconName> = {
   rain: 'rain',
-  rainroof: 'rain',
   thunderstorm: 'cloudLightning',
   wind: 'wind',
-  desert: 'sun',
   stream: 'waves',
-  river: 'waves',
-  waterfall: 'waves',
   waves: 'waves',
-  seagulls: 'wind',
   birds: 'sparkles',
-  forest: 'leaf',
   crickets: 'moon',
-  frogs: 'leaf',
-  fire: 'sparkles',
 };
 
 /** A floating panel: mix real nature recordings while reading. Works on every page. */
